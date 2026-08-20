@@ -2,13 +2,11 @@ name = "appcenter-api"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
 
-# Binding al database D1
 [[d1_databases]]
 binding = "DB"
 database_name = "appcenter-studio-db"
 database_id = "83271e55-eac9-41fc-99a4-26c8a232820a"
 
-# Binding al bucket R2
 [[r2_buckets]]
 binding = "FOTO_BUCKET"
 bucket_name = "appcenter-studio-foto"
