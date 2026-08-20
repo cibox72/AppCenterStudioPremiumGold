@@ -66,25 +66,26 @@ async function handleLogin(e) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    // Login admin hardcoded
+    // Login admin
     if (username === 'admin' && password === '58879@Stella') {
         currentUser = { type: 'admin', username: 'admin' };
         showSection('admin');
-        loadAdminStats();
+        loadAdminStats(); // Carica statistiche reali
         return;
     }
     
-    // Login studio (da implementare con API)
+    // Login studio
     try {
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(`${API_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         });
         
-        if (response.ok) {
-            const data = await response.json();
-            currentUser = { type: 'studio', ...data };
+        const data = await response.json();
+        
+        if (data.success) {
+            currentUser = { type: 'studio', ...data.studio };
             showSection('studio');
         } else {
             alert('Credenziali non valide');
@@ -95,64 +96,88 @@ async function handleLogin(e) {
     }
 }
 
-// Admin Functions
+// Carica statistiche admin
 async function loadAdminStats() {
     try {
-        // Stats mock per ora
-        document.getElementById('studi-attivi').textContent = '0';
+        // Carica studi
+        const responseStudi = await fetch(`${API_URL}/api/studi`);
+        const dataStudi = await responseStudi.json();
+        
+        if (dataStudi.success) {
+            const studiAttivi = dataStudi.studi.filter(s => s.attivo === 1).length;
+            document.getElementById('studi-attivi').textContent = studiAttivi;
+        }
+        
+        // Carica fatturato (da implementare)
         document.getElementById('fatturato').textContent = '€0';
+        
     } catch (error) {
         console.error('Errore caricamento stats:', error);
     }
 }
 
-function creaStudio() {
+// Crea studio
+async function creaStudio() {
     const nome = prompt('Nome dello studio:');
     if (!nome) return;
     
-    const telefono = prompt('Telefono:');
     const email = prompt('Email:');
+    const telefono = prompt('Telefono:');
+    const indirizzo = prompt('Indirizzo:');
+    const password = prompt('Password iniziale:');
     
-    // Genera ID univoco
-    const studioId = 'STU-' + Date.now();
-    
-    // Genera password casuale
-    const password = generaPassword();
-    
-    alert(`Studio creato con successo!\n\nID: ${studioId}\nNome: ${nome}\nEmail: ${email}\nPassword: ${password}\n\nLink di accesso: ${window.location.origin}/studio.html?id=${studioId}`);
-    
-    // Salva studio (da implementare con API)
-    saveStudio({ studioId, nome, telefono, email, password, attivo: true });
-}
-
-function generaPassword() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-    let password = '';
-    for (let i = 0; i < 12; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    if (!email || !password) {
+        alert('Email e password sono obbligatori');
+        return;
     }
-    return password;
-}
-
-async function saveStudio(studio) {
+    
     try {
-        await fetch(`${API_URL}/studi`, {
+        const response = await fetch(`${API_URL}/api/studi`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(studio)
+            body: JSON.stringify({ nome, email, telefono, indirizzo, password })
         });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`✅ Studio creato con successo!\n\nID: ${data.studio_id}\nEmail: ${email}\nPassword: ${password}`);
+            loadAdminStats(); // Ricarica statistiche
+        } else {
+            alert('❌ Errore: ' + (data.message || 'Impossibile creare lo studio'));
+        }
     } catch (error) {
-        console.error('Errore salvataggio studio:', error);
+        alert(' Errore di connessione');
     }
 }
 
-function visualizzaStudi() {
-    const listaDiv = document.getElementById('studi-lista');
-    const container = document.getElementById('studi-container');
-    
-    // Mock dati per ora
-    container.innerHTML = '<p>Nessuno studio creato ancora</p>';
-    listaDiv.classList.remove('hidden');
+// Visualizza studi
+async function visualizzaStudi() {
+    try {
+        const response = await fetch(`${API_URL}/api/studi`);
+        const data = await response.json();
+        
+        if (data.success && data.studi.length > 0) {
+            const container = document.getElementById('studi-container');
+            container.innerHTML = data.studi.map(studio => `
+                <div style="padding: 15px; border: 1px solid rgba(255,255,255,0.1); margin: 10px 0; border-radius: 8px; background: rgba(52, 73, 94, 0.4);">
+                    <strong style="color: #ecf0f1; font-size: 1.1em;">${studio.nome}</strong><br>
+                    <span style="color: #95a5a6; font-size: 0.9em;"> ${studio.email}</span><br>
+                    <span style="color: #95a5a6; font-size: 0.9em;"> ${studio.telefono || 'N/A'}</span><br>
+                    <span style="color: ${studio.attivo ? '#2ecc71' : '#e74c3c'}; font-size: 0.9em;">
+                        ${studio.attivo ? '✅ Attivo' : '❌ Disattivo'}
+                    </span><br>
+                    <span style="color: #7f8c8d; font-size: 0.85em;">📅 Creato: ${new Date(studio.data_creazione).toLocaleDateString()}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('studi-lista').classList.remove('hidden');
+        } else {
+            alert('Nessuno studio trovato');
+        }
+    } catch (error) {
+        alert('❌ Errore di connessione');
+    }
 }
 
 // Utility
@@ -163,4 +188,4 @@ function logout() {
     document.getElementById('login-form').reset();
 }
 
-console.log('AppCenterStudioPremiumGold caricato!');
+console.log('AppCenter Studio Premium Gold caricato!');
