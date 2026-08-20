@@ -1020,3 +1020,4 @@ async function logOperazione(env, studio_id, utente, operazione, dettagli) {
      VALUES (?, ?, ?, ?, ?)`
   ).bind(logId, studio_id, utente, operazione, dettagli).run();
 }
+
