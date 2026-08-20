@@ -6,49 +6,103 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Sfondo Premium Gold con linee geometriche */
+    background: 
+        linear-gradient(135deg, 
+            rgba(26, 26, 62, 0.9) 0%, 
+            rgba(74, 74, 138, 0.8) 35%,
+            rgba(255, 215, 0, 0.6) 65%,
+            rgba(244, 229, 194, 0.9) 100%
+        ),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(255, 255, 255, 0.03) 10px,
+            rgba(255, 255, 255, 0.03) 20px
+        );
+    background-size: cover, 40px 40px;
+    background-attachment: fixed;
     min-height: 100vh;
     padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Effetto raggi di luce */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(
+            ellipse at center,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 100%
+        );
+    transform: rotate(45deg);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
     padding: 30px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    box-shadow: 
+        0 10px 40px rgba(0,0,0,0.3),
+        inset 0 0 100px rgba(255, 215, 0, 0.1);
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, #1a1a3e, #FFD700, #4a4a8a);
+    border-image-slice: 1;
 }
 
 header h1 {
-    color: #667eea;
+    background: linear-gradient(135deg, #1a1a3e 0%, #FFD700 50%, #4a4a8a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 20px;
     font-size: 2.5em;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
 nav button {
-    background: #667eea;
+    background: linear-gradient(135deg, #1a1a3e 0%, #4a4a8a 100%);
     color: white;
-    border: none;
+    border: 2px solid #FFD700;
     padding: 12px 25px;
     margin: 0 10px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 600;
     transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(26, 26, 62, 0.3);
 }
 
 nav button:hover {
-    background: #764ba2;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, #FFD700 0%, #F4E5C2 100%);
+    color: #1a1a3e;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
 }
 
 section {
@@ -57,6 +111,12 @@ section {
 
 section.active {
     display: block;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .hidden {
@@ -76,27 +136,33 @@ input {
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
+    transition: all 0.3s;
 }
 
 input:focus {
-    border-color: #667eea;
+    border-color: #FFD700;
     outline: none;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
 button {
-    background: #667eea;
+    background: linear-gradient(135deg, #1a1a3e 0%, #4a4a8a 100%);
     color: white;
-    border: none;
+    border: 2px solid #FFD700;
     padding: 12px 25px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 600;
     transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(26, 26, 62, 0.3);
 }
 
 button:hover {
-    background: #764ba2;
+    background: linear-gradient(135deg, #FFD700 0%, #F4E5C2 100%);
+    color: #1a1a3e;
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
 }
 
 .dashboard {
@@ -111,16 +177,25 @@ button:hover {
 }
 
 .stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1a1a3e 0%, #4a4a8a 100%);
     color: white;
     padding: 25px;
     border-radius: 10px;
     text-align: center;
+    border: 2px solid #FFD700;
+    box-shadow: 0 5px 20px rgba(26, 26, 62, 0.3);
+    transition: all 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
 }
 
 .stat-card h3 {
     font-size: 1.2em;
     margin-bottom: 10px;
+    color: #FFD700;
 }
 
 .stat-card p {
@@ -129,15 +204,16 @@ button:hover {
 }
 
 .actions {
-    background: #f8f9fa;
+    background: linear-gradient(135deg, rgba(244, 229, 194, 0.3) 0%, rgba(255, 215, 0, 0.2) 100%);
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .actions h3 {
     margin-bottom: 15px;
-    color: #333;
+    color: #1a1a3e;
 }
 
 .actions button {
@@ -153,10 +229,11 @@ button:hover {
 }
 
 #studio-content {
-    background: #f8f9fa;
+    background: linear-gradient(135deg, rgba(244, 229, 194, 0.3) 0%, rgba(255, 215, 0, 0.2) 100%);
     padding: 20px;
     border-radius: 10px;
     min-height: 200px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 @media (max-width: 768px) {
