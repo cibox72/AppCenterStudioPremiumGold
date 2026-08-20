@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AppCenterStudioPremiumGold 🏆</title>
+    <title>AppCenter Studio Premium Gold</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🏆 AppCenterStudioPremiumGold </h1>
+            <h1>AppCenter Studio Premium Gold</h1>
             <nav>
                 <button onclick="showSection('login')">Login</button>
                 <button onclick="showSection('admin')">Admin</button>
@@ -20,40 +20,40 @@
         <main id="main-content">
             <!-- Sezione Login -->
             <section id="login" class="active">
-                <h2 style="text-align: center; color: #1a1a3e; margin-bottom: 20px;">🔐 Accedi al Sistema</h2>
+                <h2 style="text-align: center; color: #666; margin-bottom: 20px; font-weight: 300;">Accedi al Sistema</h2>
                 <form id="login-form">
                     <input type="text" id="username" placeholder="Username" required>
                     <input type="password" id="password" placeholder="Password" required>
                     <button type="submit">Accedi</button>
                 </form>
-                <p style="text-align: center; color: #666; margin-top: 20px; font-size: 14px;">
-                    💡 Admin: username <strong>admin</strong> - password <strong>58879@Stella</strong>
+                <p style="text-align: center; color: #999; margin-top: 20px; font-size: 14px;">
+                    Admin: username <strong>admin</strong> - password <strong>58879@Stella</strong>
                 </p>
             </section>
 
             <!-- Sezione Admin -->
             <section id="admin" class="hidden">
-                <h2 style="color: #1a1a3e; border-bottom: 2px solid #FFD700; padding-bottom: 10px;">👑 Pannello Amministratore</h2>
+                <h2 style="color: #666; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; font-weight: 300;">Pannello Amministratore</h2>
                 <div class="dashboard">
                     <div class="stats">
                         <div class="stat-card">
-                            <h3>📸 Studi Attivi</h3>
+                            <h3>Studi Attivi</h3>
                             <p id="studi-attivi">0</p>
                         </div>
                         <div class="stat-card">
-                            <h3>💰 Fatturato Mese</h3>
+                            <h3>Fatturato Mese</h3>
                             <p id="fatturato">€0</p>
                         </div>
                     </div>
                     
                     <div class="actions">
-                        <h3>⚙️ Gestione Studi</h3>
-                        <button onclick="creaStudio()"> Crea Nuovo Studio</button>
-                        <button onclick="visualizzaStudi()">📋 Visualizza Tutti gli Studi</button>
+                        <h3>Gestione Studi</h3>
+                        <button onclick="creaStudio()">Crea Nuovo Studio</button>
+                        <button onclick="visualizzaStudi()">Visualizza Tutti gli Studi</button>
                     </div>
 
                     <div id="studi-lista" class="hidden">
-                        <h3 style="margin-bottom: 15px; color: #1a1a3e;"> Lista Studi</h3>
+                        <h3 style="margin-bottom: 15px; color: #666; font-weight: 400;">Lista Studi</h3>
                         <div id="studi-container"></div>
                     </div>
                 </div>
@@ -61,23 +61,23 @@
 
             <!-- Sezione Studio -->
             <section id="studio" class="hidden">
-                <h2 style="color: #1a1a3e; border-bottom: 2px solid #FFD700; padding-bottom: 10px;"> Pannello Studio Fotografico</h2>
+                <h2 style="color: #666; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; font-weight: 300;">Pannello Studio Fotografico</h2>
                 <div class="menu-studio">
-                    <button onclick="showStudioSection('preventivi')">📋 Preventivi</button>
-                    <button onclick="showStudioSection('clienti')">👥 Clienti</button>
-                    <button onclick="showStudioSection('foto')"> Foto</button>
-                    <button onclick="showStudioSection('agenda')"> Agenda</button>
-                    <button onclick="showStudioSection('negozio')">🛒 Negozio</button>
+                    <button onclick="showStudioSection('preventivi')">Preventivi</button>
+                    <button onclick="showStudioSection('clienti')">Clienti</button>
+                    <button onclick="showStudioSection('foto')">Foto</button>
+                    <button onclick="showStudioSection('agenda')">Agenda</button>
+                    <button onclick="showStudioSection('negozio')">Negozio</button>
                 </div>
                 
                 <div id="studio-content">
-                    <p style="text-align: center; color: #666; padding: 40px;">Seleziona una sezione dal menu sopra</p>
+                    <p style="text-align: center; color: #999; padding: 40px;">Seleziona una sezione dal menu sopra</p>
                 </div>
             </section>
         </main>
 
-        <footer style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255, 215, 0, 0.3); color: #666; font-size: 14px;">
-            <p>© 2026 AppCenterStudioPremiumGold - Tutti i diritti riservati</p>
+        <footer style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #999; font-size: 14px;">
+            <p>© 2026 AppCenter Studio Premium Gold - Tutti i diritti riservati</p>
         </footer>
     </div>
 
