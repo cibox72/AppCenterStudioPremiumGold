@@ -12,19 +12,3 @@ database_id = "83271e55-eac9-41fc-99a4-26c8a232820a"
 [[r2_buckets]]
 binding = "FOTO_BUCKET"
 bucket_name = "appcenter-studio-foto"
-
-# Migrazioni database
-[build]
-command = "npm install"
-
-[[migrations]]
-tag = "v1"
-new_sqlite_tables = [
-  "studi",
-  "clienti", 
-  "preventivi",
-  "foto",
-  "contratti",
-  "gallery",
-  "ricevute"
-]
