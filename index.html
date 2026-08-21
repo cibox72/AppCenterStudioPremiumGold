@@ -29,7 +29,7 @@ h1{text-align:center;color:#333;margin-bottom:10px;font-size:28px}
 </head>
 <body>
 <div class="container">
-  <h1>🎨 AppCenter Studio Premium Gold</h1>
+  <h1> AppCenter Studio Premium Gold</h1>
   <p class="subtitle">Suite gestionale per studi fotografici</p>
   
   <div id="loginSection" class="login-box">
@@ -47,22 +47,22 @@ h1{text-align:center;color:#333;margin-bottom:10px;font-size:28px}
   </div>
 
   <div id="appsSection" class="hidden">
-    <h2 style="margin-bottom:15px;color:#333;font-size:18px"> Applicazioni disponibili</h2>
+    <h2 style="margin-bottom:15px;color:#333;font-size:18px">📱 Applicazioni disponibili</h2>
     <div class="apps">
-      <a href="preventivi-contratti/index.html" class="app-link">
+      <a href="public/preventivi.html" class="app-link">
         <span class="num">01</span>
         <h3>Preventivi & Contratti</h3>
         <p>Crea preventivi, contratti, gestisci acconti e invia su WhatsApp</p>
       </a>
-      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+      <a href="public/clienti.html" class="app-link">
         <span class="num">02</span>
-        <h3>Workflow</h3>
-        <p>Gestione del flusso di lavoro dello studio</p>
+        <h3>Gestione Clienti</h3>
+        <p>Anagrafica clienti completa</p>
       </a>
       <a href="#" class="app-link" onclick="alert('In sviluppo!')">
         <span class="num">03</span>
-        <h3>Clienti & Foto</h3>
-        <p>Anagrafica clienti e gestione foto</p>
+        <h3>Workflow</h3>
+        <p>Gestione del flusso di lavoro dello studio</p>
       </a>
       <a href="#" class="app-link" onclick="alert('In sviluppo!')">
         <span class="num">04</span>
@@ -90,7 +90,7 @@ h1{text-align:center;color:#333;margin-bottom:10px;font-size:28px}
         <p>Emissione ricevute e gestione pagamenti</p>
       </a>
     </div>
-    <button class="btn" style="background:#e74c3c;margin-top:20px" onclick="logout()">Esci</button>
+    <button class="btn" style="background:#e74c3c;margin-top:20px" onclick="logout()">🚪 Esci</button>
   </div>
 </div>
 
@@ -102,7 +102,7 @@ function login(){
     sessionStorage.setItem('loggedIn','true');
     showApps();
   } else {
-    document.getElementById('errorMsg').textContent='Credenziali non valide';
+    document.getElementById('errorMsg').textContent='❌ Credenziali non valide';
   }
 }
 function logout(){
