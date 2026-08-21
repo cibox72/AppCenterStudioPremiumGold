@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 Gestione Clienti - AppCenterStudio Premium Gold</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--crema:#f4efe7;--carta:#fbf9f5;--taupe:#a3937d;--taupe-scuro:#6f6353;--beige:#e9dfcd;--testo:#4a4237;--soft:#9b8f7d;--bordo:#e5dccb;--salvia:#7d8a5f;--verde:#5a8f5a;--arancio:#d4a574;--grigio:#9a9a9a}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:var(--crema);color:var(--testo);min-height:100vh;padding:0}
+.topbar{display:flex;gap:8px;padding:12px 18px;background:rgba(251,249,245,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--bordo);position:sticky;top:0;z-index:100;flex-wrap:wrap;align-items:center}
+.topbar button{padding:8px 18px;background:#fff;border:1px solid var(--taupe);cursor:pointer;font-size:12px;border-radius:999px;font-family:inherit;color:var(--taupe-scuro);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.topbar button:hover{background:var(--taupe);color:#fff}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+header{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:18px 22px;box-shadow:0 6px 18px rgba(120,100,70,.08);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-family:Georgia,serif;font-size:1.6em;color:var(--taupe-scuro);letter-spacing:.08em;text-transform:uppercase}
+.logo span{font-size:.55em;display:block;color:var(--soft);font-weight:400;text-transform:none;letter-spacing:normal}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{padding:9px 16px;border:1px solid var(--taupe);background:#fff;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;color:var(--taupe-scuro);font-family:inherit;letter-spacing:.04em}
+.actions button:hover{background:var(--taupe);color:#fff}
+.card{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 6px 18px rgba(120,100,70,.08)}
+.card h2{color:var(--taupe-scuro);font-size:20px;border-left:4px solid var(--taupe);padding-left:12px;margin-bottom:14px}
+.form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.form-row input,.form-row select,.form-row textarea{flex:1;min-width:200px;padding:10px;border:1px solid var(--bordo);border-radius:10px;font-size:14px;background:#fff;font-family:inherit;color:var(--testo)}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:2px solid var(--taupe)}
+.form-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-primary{background:var(--taupe);color:#fff;border:1px solid var(--taupe);padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;letter-spacing:.04em}
+.btn-primary:hover{background:var(--taupe-scuro);border-color:var(--taupe-scuro)}
+.btn-ghost{background:#fff;color:var(--taupe-scuro);border:1px solid var(--taupe);padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit}
+.btn-ghost:hover{background:var(--taupe);color:#fff}
+.status-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.78em;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.status-attivo{background:var(--verde);color:#fff}
+.status-attesa{background:var(--arancio);color:#fff}
+.status-archiviato{background:var(--grigio);color:#fff}
+.client-card{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 6px 18px rgba(120,100,70,.08)}
+.client-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;flex-wrap:wrap;gap:10px}
+.client-name{font-size:1.2em;font-weight:700;color:var(--taupe-scuro);font-family:Georgia,serif}
+.client-info{font-size:.9em;color:var(--soft);margin-top:4px}
+.client-actions{display:flex;gap:8px;flex-wrap:wrap}
+.client-actions button{padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:12px;color:#fff;font-family:inherit;border:1px solid transparent}
+.btn-view{background:var(--taupe)}
+.btn-edit{background:#8b7355}
+.btn-del{background:#fff;color:var(--taupe-scuro);border:1px solid var(--taupe)}
+.btn-del:hover{background:var(--taupe);color:#fff}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:1000;justify-content:center;align-items:center;padding:20px;overflow-y:auto}
+.modal.active{display:flex}
+.modal-content{background:var(--carta);border-radius:14px;max-width:800px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(120,100,70,.25);border:1px solid var(--bordo)}
+.modal-header{background:var(--taupe-scuro);color:#fff;padding:20px 24px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-size:1.25em;font-family:Georgia,serif}
+.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.2em}
+.modal-body{padding:22px}
+.section-title{font-size:1em;font-weight:700;padding:10px 14px;margin:14px 0 8px;border-radius:10px;color:#fff;background:var(--taupe);font-family:Georgia,serif;letter-spacing:.05em}
+.link-row{display:flex;gap:8px;align-items:center;padding:8px;margin:6px 0;background:#fff;border:1px solid var(--bordo);border-radius:8px;flex-wrap:wrap}
+.link-row input{flex:1;min-width:200px;padding:6px 10px;border:1px solid var(--bordo);border-radius:6px;font-size:13px}
+.link-row button{background:#fff;border:1px solid #8c2f2f;color:#8c2f2f;border-radius:999px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600}
+.link-row button:hover{background:#8c2f2f;color:#fff}
+.history-item{padding:10px;margin:6px 0;background:#fff;border-radius:8px;border-left:4px solid var(--bordo)}
+.history-item h4{color:var(--taupe-scuro);margin-bottom:5px;font-size:.95em}
+.history-item p{color:var(--soft);font-size:.85em;margin:2px 0}
+.empty{text-align:center;padding:50px 20px;color:var(--soft);font-size:1.1em;background:var(--carta);border:1px solid var(--bordo);border-radius:14px}
+.search-box{flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--bordo);border-radius:999px;font-size:14px;font-family:inherit;background:#fff}
+.filter-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.filter-tab{padding:8px 16px;background:#fff;border:1px solid var(--bordo);border-radius:999px;cursor:pointer;font-size:13px;font-weight:600;color:var(--testo)}
+.filter-tab.active{background:var(--taupe);color:#fff;border-color:var(--taupe)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button onclick="history.back()">← Indietro</button>
+  <button onclick="goHome()">Home</button>
+  <button onclick="backupGlobale()">Backup globale</button>
+  <label style="padding:8px 18px;background:#fff;border:1px solid var(--taupe);cursor:pointer;font-size:12px;border-radius:999px;font-weight:600;color:var(--taupe-scuro)">Ripristino<input type="file" hidden accept=".json" onchange="ripristinoGlobale(event)"></label>
+</div>
+
+<div class="container">
+  <header>
+    <div class="logo">AppCenterStudio Premium<span>Gestione Clienti</span></div>
+    <div class="actions">
+      <button onclick="toggleNewClient()">+ Nuovo Cliente</button>
+      <button onclick="syncFromPreventivi()">🔄 Sync da Preventivi</button>
+    </div>
+  </header>
+
+  <div id="newClient" class="card" style="display:none">
+    <h2>Nuovo Cliente</h2>
+    <div class="form-row">
+      <input type="text" id="inputNome" placeholder="Nome">
+      <input type="text" id="inputCognome" placeholder="Cognome">
+    </div>
+    <div class="form-row">
+      <input type="text" id="inputTelefono" placeholder="Telefono">
+      <input type="email" id="inputEmail" placeholder="Email">
+    </div>
+    <div class="form-row">
+      <input type="text" id="inputVia" placeholder="Via/Piazza e n. civico">
+      <input type="text" id="inputCitta" placeholder="Città">
+    </div>
+    <div class="form-row">
+      <input type="text" id="inputCap" placeholder="CAP">
+      <input type="text" id="inputProv" placeholder="Provincia">
+    </div>
+    <div class="form-row">
+      <select id="inputStato">
+        <option value="attivo">Attivo</option>
+        <option value="attesa">In attesa</option>
+        <option value="archiviato">Archiviato</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="toggleNewClient()">Annulla</button>
+      <button class="btn-primary" onclick="saveClient()">Salva</button>
+    </div>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="filterByStatus('all')">Tutti</button>
+    <button class="filter-tab" onclick="filterByStatus('attivo')">Attivi</button>
+    <button class="filter-tab" onclick="filterByStatus('attesa')">In attesa</button>
+    <button class="filter-tab" onclick="filterByStatus('archiviato')">Archiviati</button>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+      <input type="text" class="search-box" id="searchBox" placeholder="Cerca cliente per nome, cognome o email..." oninput="renderClients()">
+    </div>
+    <div id="clientsList"></div>
+  </div>
+</div>
+
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="detailTitle">Dettagli Cliente</h2>
+      <button class="modal-close" onclick="closeModal('detailModal')">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+  </div>
+</div>
+
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Modifica Cliente</h2>
+      <button class="modal-close" onclick="closeModal('editModal')">×</button>
+    </div>
+    <div class="modal-body" id="editBody"></div>
+  </div>
+</div>
+
+<script>
+function goHome() { location.href = '../index.html'; }
+
+// Check auth
+if (sessionStorage.getItem('loggedIn') !== 'true') {
+  alert('Devi effettuare il login dalla dashboard principale.');
+  goHome();
+}
+
+// Database
+let clients = JSON.parse(localStorage.getItem('gl_clients_v1') || '[]');
+let editingId = null;
+let currentFilter = 'all';
+
+function uid() { return 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function save() { localStorage.setItem('gl_clients_v1', JSON.stringify(clients)); }
+
+// Sync dai preventivi
+function syncFromPreventivi() {
+  try {
+    const preventiviDb = JSON.parse(localStorage.getItem('appcenter_db_v1') || '{"preventivi":[]}');
+    const preventivi = preventiviDb.preventivi || [];
+    let added = 0;
+    
+    preventivi.forEach(p => {
+      const clienteA = p.a || p.clienteA || {};
+      const nome = (clienteA.nome || '').trim();
+      const cognome = (clienteA.cognome || '').trim();
+      
+      if (!nome && !cognome) return;
+      
+      const exists = clients.find(c => 
+        c.nome.toLowerCase() === nome.toLowerCase() && 
+        c.cognome.toLowerCase() === cognome.toLowerCase()
+      );
+      
+      if (!exists) {
+        clients.push({
+          id: uid(),
+          nome: nome,
+          cognome: cognome,
+          telefono: clienteA.telefono || '',
+          email: clienteA.email || '',
+          via: clienteA.via || '',
+          citta: clienteA.citta || '',
+          cap: clienteA.cap || '',
+          prov: clienteA.prov || '',
+          stato: 'attivo',
+          note: '',
+          fotoLinks: [],
+          storicoServizi: [{
+            data: p.dataCreazione || new Date().toISOString().slice(0,10),
+            tipo: p.tipo || 'Servizio',
+            numero: p.numero || '',
+            importo: p._totale || 0
+          }],
+          createdAt: new Date().toISOString()
+        });
+        added++;
+      } else {
+        // Aggiungi allo storico se esiste già
+        const storicoExists = exists.storicoServizi?.find(s => s.numero === p.numero);
+        if (!storicoExists && p.numero) {
+          if (!exists.storicoServizi) exists.storicoServizi = [];
+          exists.storicoServizi.push({
+            data: p.dataCreazione || new Date().toISOString().slice(0,10),
+            tipo: p.tipo || 'Servizio',
+            numero: p.numero,
+            importo: p._totale || 0
+          });
+        }
+      }
+    });
+    
+    save();
+    renderClients();
+    alert(`Sync completato! ${added} nuovi clienti aggiunti dall'archivio preventivi.`);
+  } catch(e) {
+    alert('Errore durante il sync: ' + e.message);
+  }
+}
+
+function toggleNewClient() {
+  document.getElementById('newClient').style.display = 
+    document.getElementById('newClient').style.display === 'none' ? 'block' : 'none';
+}
+
+function saveClient() {
+  const nome = document.getElementById('inputNome').value.trim();
+  const cognome = document.getElementById('inputCognome').value.trim();
+  const telefono = document.getElementById('inputTelefono').value.trim();
+  const email = document.getElementById('inputEmail').value.trim();
+  const via = document.getElementById('inputVia').value.trim();
+  const citta = document.getElementById('inputCitta').value.trim();
+  const cap = document.getElementById('inputCap').value.trim();
+  const prov = document.getElementById('inputProv').value.trim();
+  const stato = document.getElementById('inputStato').value;
+  
+  if (!nome && !cognome) return alert('Inserisci almeno nome o cognome.');
+  
+  clients.unshift({
+    id: uid(),
+    nome, cognome, telefono, email, via, citta, cap, prov, stato,
+    note: '',
+    fotoLinks: [],
+    storicoServizi: [],
+    createdAt: new Date().toISOString()
+  });
+  
+  save();
+  
+  // Reset form
+  ['inputNome','inputCognome','inputTelefono','inputEmail','inputVia','inputCitta','inputCap','inputProv'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('inputStato').value = 'attivo';
+  
+  toggleNewClient();
+  renderClients();
+}
+
+function deleteClient(id) {
+  if (!confirm('Eliminare questo cliente?')) return;
+  clients = clients.filter(c => c.id !== id);
+  save();
+  renderClients();
+}
+
+function viewClient(id) {
+  const c = clients.find(x => x.id === id);
+  if (!c) return;
+  
+  const statoClass = c.stato === 'attivo' ? 'status-attivo' : c.stato === 'attesa' ? 'status-attesa' : 'status-archiviato';
+  const statoLabel = c.stato === 'attivo' ? 'Attivo' : c.stato === 'attesa' ? 'In attesa' : 'Archiviato';
+  
+  let html = `
+    <div class="detail-row" style="margin-bottom:16px;padding:14px;background:var(--beige);border-radius:10px">
+      <div style="font-size:.9em;color:var(--soft);margin-bottom:4px">Stato</div>
+      <span class="status-badge ${statoClass}">${statoLabel}</span>
+    </div>
+    
+    <div class="section-title">Contatti</div>
+    <div class="detail-row"><div class="detail-label">Nome</div><div class="detail-value">${c.nome || '—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Cognome</div><div class="detail-value">${c.cognome || '—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Telefono</div><div class="detail-value">${c.telefono || '—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value">${c.email || '—'}</div></div>
+    <div class="detail-row"><div class="detail-label">Indirizzo</div><div class="detail-value">${[c.via, c.citta, c.cap, c.prov].filter(Boolean).join(', ') || '—'}</div></div>
+    
+    <div class="section-title">Note Interne</div>
+    <div class="detail-row" style="white-space:pre-wrap">${c.note || 'Nessuna nota'}</div>
+    
+    <div class="section-title">Link Foto/Video</div>
+    ${(c.fotoLinks || []).length === 0 ? '<p style="color:var(--soft);padding:10px">Nessun link salvato</p>' : 
+      (c.fotoLinks || []).map((link, i) => `
+        <div class="link-row">
+          <input type="text" value="${link.url || ''}" readonly style="flex:1">
+          <button onclick="window.open('${link.url || ''}', '_blank')">Apri</button>
+          ${link.desc ? `<span style="font-size:.85em;color:var(--soft)">${link.desc}</span>` : ''}
+        </div>
+      `).join('')
+    }
+    
+    <div class="section-title">Storico Servizi</div>
+    ${(c.storicoServizi || []).length === 0 ? '<p style="color:var(--soft);padding:10px">Nessun servizio registrato</p>' : 
+      (c.storicoServizi || []).map(s => `
+        <div class="history-item">
+          <h4>${s.tipo || 'Servizio'} ${s.numero ? `— ${s.numero}` : ''}</h4>
+          <p>Data: ${s.data ? formatDate(s.data) : '—'}</p>
+          <p>Importo: € ${s.importo ? fmt(s.importo) : '—'}</p>
+        </div>
+      `).join('')
+    }
+  `;
+  
+  document.getElementById('detailTitle').textContent = `${c.nome} ${c.cognome}`;
+  document.getElementById('detailBody').innerHTML = html;
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function editClient(id) {
+  const c = clients.find(x => x.id === id);
+  if (!c) return;
+  
+  editingId = id;
+  
+  let html = `
+    <div class="form-row">
+      <input type="text" id="editNome" placeholder="Nome" value="${c.nome || ''}">
+      <input type="text" id="editCognome" placeholder="Cognome" value="${c.cognome || ''}">
+    </div>
+    <div class="form-row">
+      <input type="text" id="editTelefono" placeholder="Telefono" value="${c.telefono || ''}">
+      <input type="email" id="editEmail" placeholder="Email" value="${c.email || ''}">
+    </div>
+    <div class="form-row">
+      <input type="text" id="editVia" placeholder="Via/Piazza" value="${c.via || ''}">
+      <input type="text" id="editCitta" placeholder="Città" value="${c.citta || ''}">
+    </div>
+    <div class="form-row">
+      <input type="text" id="editCap" placeholder="CAP" value="${c.cap || ''}">
+      <input type="text" id="editProv" placeholder="Provincia" value="${c.prov || ''}">
+    </div>
+    <div class="form-row">
+      <select id="editStato">
+        <option value="attivo" ${c.stato === 'attivo' ? 'selected' : ''}>Attivo</option>
+        <option value="attesa" ${c.stato === 'attesa' ? 'selected' : ''}>In attesa</option>
+        <option value="archiviato" ${c.stato === 'archiviato' ? 'selected' : ''}>Archiviato</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <textarea id="editNote" placeholder="Note interne" rows="4">${c.note || ''}</textarea>
+    </div>
+    
+    <div class="section-title">Link Foto/Video</div>
+    <div id="editLinks"></div>
+    <button class="btn-ghost" onclick="addEditLink()" style="margin:8px 0">+ Aggiungi link</button>
+    
+    <div class="form-actions" style="margin-top:18px">
+      <button class="btn-ghost" onclick="closeModal('editModal')">Annulla</button>
+      <button class="btn-primary" onclick="saveEdit()">Salva Modifiche</button>
+    </div>
+  `;
+  
+  document.getElementById('editBody').innerHTML = html;
+  renderEditLinks(c.fotoLinks || []);
+  document.getElementById('editModal').classList.add('active');
+}
+
+function renderEditLinks(links) {
+  const container = document.getElementById('editLinks');
+  if (!container) return;
+  
+  window.editLinks = links.map(l => ({...l}));
+  
+  container.innerHTML = window.editLinks.map((link, i) => `
+    <div class="link-row" style="margin:6px 0">
+      <input type="text" placeholder="URL (es. Google Drive, Dropbox)" value="${link.url || ''}" onchange="window.editLinks[${i}].url=this.value">
+      <input type="text" placeholder="Descrizione" value="${link.desc || ''}" style="flex:.5;min-width:120px" onchange="window.editLinks[${i}].desc=this.value">
+      <button onclick="window.editLinks.splice(${i},1);renderEditLinks(window.editLinks)" style="background:#8c2f2f;color:#fff;border-color:#8c2f2f">Rimuovi</button>
+    </div>
+  `).join('');
+}
+
+function addEditLink() {
+  window.editLinks.push({url: '', desc: ''});
+  renderEditLinks(window.editLinks);
+}
+
+function saveEdit() {
+  if (!editingId) return;
+  const c = clients.find(x => x.id === editingId);
+  if (!c) return;
+  
+  c.nome = document.getElementById('editNome').value.trim();
+  c.cognome = document.getElementById('editCognome').value.trim();
+  c.telefono = document.getElementById('editTelefono').value.trim();
+  c.email = document.getElementById('editEmail').value.trim();
+  c.via = document.getElementById('editVia').value.trim();
+  c.citta = document.getElementById('editCitta').value.trim();
+  c.cap = document.getElementById('editCap').value.trim();
+  c.prov = document.getElementById('editProv').value.trim();
+  c.stato = document.getElementById('editStato').value;
+  c.note = document.getElementById('editNote').value.trim();
+  c.fotoLinks = window.editLinks || [];
+  
+  save();
+  closeModal('editModal');
+  renderClients();
+}
+
+function filterByStatus(status) {
+  currentFilter = status;
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.textContent.toLowerCase().includes(status === 'all' ? 'tutti' : status === 'attesa' ? 'attesa' : status)) {
+      tab.classList.add('active');
+    }
+  });
+  renderClients();
+}
+
+function renderClients() {
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  let filtered = clients.filter(c => {
+    if (currentFilter !== 'all' && c.stato !== currentFilter) return false;
+    if (search) {
+      const fullName = `${c.nome} ${c.cognome}`.toLowerCase();
+      return fullName.includes(search) || (c.email || '').toLowerCase().includes(search);
+    }
+    return true;
+  });
+  
+  const list = document.getElementById('clientsList');
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">Nessun cliente trovato.</div>';
+    return;
+  }
+  
+  list.innerHTML = filtered.map(c => {
+    const statoClass = c.stato === 'attivo' ? 'status-attivo' : c.stato === 'attesa' ? 'status-attesa' : 'status-archiviato';
+    const statoLabel = c.stato === 'attivo' ? 'Attivo' : c.stato === 'attesa' ? 'In attesa' : 'Archiviato';
+    const serviziCount = (c.storicoServizi || []).length;
+    
+    return `
+      <div class="client-card">
+        <div class="client-header" onclick="viewClient('${c.id}')">
+          <div>
+            <div class="client-name">${c.nome} ${c.cognome}</div>
+            <div class="client-info">
+              ${c.telefono ? `📞 ${c.telefono}` : ''} 
+              ${c.email ? `· ✉️ ${c.email}` : ''}
+              ${serviziCount > 0 ? `· 📦 ${serviziCount} servizi` : ''}
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <span class="status-badge ${statoClass}">${statoLabel}</span>
+            <div class="client-actions" onclick="event.stopPropagation()">
+              <button class="btn-view" onclick="viewClient('${c.id}')">Vedi</button>
+              <button class="btn-edit" onclick="editClient('${c.id}')">Modifica</button>
+              <button class="btn-del" onclick="deleteClient('${c.id}')">Elimina</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  if (id === 'editModal') editingId = null;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const parts = String(dateStr).split('-');
+  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`;
+  return dateStr;
+}
+
+function fmt(n) {
+  return (isNaN(+n) ? 0 : +n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function backupGlobale() {
+  const d = {};
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); d[k] = localStorage.getItem(k); }
+  const blob = new Blob([JSON.stringify({app:'AppCenterStudioPremiumGold', exportedAt:new Date().toISOString(), data:d}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'AppCenterStudio_BACKUP_' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+  alert('Backup globale scaricato.');
+}
+
+function ripristinoGlobale(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const obj = JSON.parse(ev.target.result);
+      const d = obj.data || obj;
+      if (typeof d !== 'object') throw new Error('File non valido.');
+      if (!confirm('Ripristinare il backup globale (' + Object.keys(d).length + ' voci)?')) return;
+      Object.keys(d).forEach(k => localStorage.setItem(k, d[k]));
+      alert('Backup ripristinato.');
+      location.reload();
+    } catch (err) { alert('Errore: ' + err.message); }
+  };
+  r.readAsText(f);
+}
+
+// Init
+renderClients();
+</script>
+</body>
+</html>
