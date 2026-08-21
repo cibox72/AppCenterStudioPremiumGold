@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 Workflow Foto & Video - AppCenterStudio Premium</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--crema:#f4efe7;--carta:#fbf9f5;--taupe:#a3937d;--taupe-scuro:#6f6353;--beige:#e9dfcd;--testo:#4a4237;--soft:#9b8f7d;--bordo:#e5dccb;--salvia:#7d8a5f}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:var(--crema);color:var(--testo);min-height:100vh;padding:0}
+h1,h2,h3,h4{font-family:Georgia,serif;font-weight:normal}
+.topbar{display:flex;gap:8px;padding:12px 18px;background:rgba(251,249,245,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--bordo);position:sticky;top:0;z-index:100;flex-wrap:wrap;align-items:center}
+.topbar button,.topbar label{padding:8px 18px;background:#fff;border:1px solid var(--taupe);cursor:pointer;font-size:12px;border-radius:999px;font-family:inherit;color:var(--taupe-scuro);margin:0;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.topbar button:hover,.topbar label:hover{background:var(--taupe);color:#fff}
+.container{max-width:1600px;margin:0 auto;padding:20px}
+header{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:18px 22px;box-shadow:0 6px 18px rgba(120,100,70,.08);margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-family:Georgia,serif;font-size:1.6em;color:var(--taupe-scuro);letter-spacing:.08em;text-transform:uppercase}
+.logo span{font-size:.55em;display:block;color:var(--soft);font-weight:400;text-transform:none;letter-spacing:normal}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{padding:9px 16px;border:1px solid var(--taupe);background:#fff;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;color:var(--taupe-scuro);font-family:inherit;letter-spacing:.04em}
+.actions button:hover{background:var(--taupe);color:#fff;border-color:var(--taupe)}
+.admin-banner{background:var(--taupe-scuro);color:#fff;padding:12px 18px;border-radius:12px;margin-bottom:16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.admin-banner button{background:#fff;color:var(--taupe-scuro);border:none;padding:8px 18px;border-radius:999px;cursor:pointer;font-weight:600;font-size:12px}
+.card{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 6px 18px rgba(120,100,70,.08)}
+.card h2{color:var(--taupe-scuro);font-size:20px;border-left:4px solid var(--taupe);padding-left:12px;margin-bottom:14px}
+.hint{font-size:12px;color:var(--soft);margin-bottom:10px}
+.new-service{display:none}
+.new-service.open{display:block}
+.form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.form-row input,.form-row select,.form-row textarea{flex:1;min-width:200px;padding:10px;border:1px solid var(--bordo);border-radius:10px;font-size:14px;background:#fff;font-family:inherit;color:var(--testo)}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:2px solid var(--taupe)}
+.form-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-primary,.btn-save{background:var(--taupe);color:#fff;border:1px solid var(--taupe);padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;letter-spacing:.04em}
+.btn-primary:hover,.btn-save:hover{background:var(--taupe-scuro);border-color:var(--taupe-scuro)}
+.btn-ghost,.btn-cancel{background:#fff;color:var(--taupe-scuro);border:1px solid var(--taupe);padding:9px 18px;border-radius:999px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit}
+.btn-ghost:hover,.btn-cancel:hover{background:var(--taupe);color:#fff}
+.client-name{font-size:1.15em;font-weight:700;color:var(--taupe-scuro);font-family:Georgia,serif}
+.client-date{font-size:.85em;color:var(--soft);margin-top:3px}
+.videographer-info{font-size:.85em;color:var(--soft);margin-top:3px;font-style:italic}
+.service-badge{padding:5px 14px;border-radius:999px;font-size:.78em;color:#fff;font-weight:600;text-transform:uppercase;letter-spacing:.03em;background:var(--taupe)}
+.progress-bar{background:#e0e0e0;height:10px;border-radius:5px;margin-top:12px;overflow:hidden}
+.progress-fill{height:100%;background:var(--taupe);transition:width .4s}
+.progress-text{font-size:.85em;color:var(--soft);margin-top:5px}
+.steps{margin-top:16px;display:none;padding-top:14px}
+.steps.open{display:block}
+.section-title{font-size:1em;font-weight:700;padding:10px 14px;margin:14px 0 8px;border-radius:10px;color:#fff;background:var(--taupe);font-family:Georgia,serif;letter-spacing:.05em;display:flex;justify-content:space-between;align-items:center}
+.step{display:flex;flex-direction:column;padding:12px;margin:6px 0;background:rgba(255,255,255,0.85);border:1px solid var(--bordo);border-radius:10px;gap:8px}
+.step.done{background:#fff;border:2px solid var(--taupe)}
+.step-main{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.step input[type=checkbox]{width:20px;height:20px;cursor:pointer;accent-color:var(--taupe);flex-shrink:0}
+.step-label{flex:1;font-weight:500;min-width:200px;color:var(--testo);font-size:14px}
+.step.done .step-label{text-decoration:line-through;color:var(--soft)}
+.step-fields{display:flex;gap:8px;flex-wrap:wrap;padding-left:32px}
+.step-fields input,.step-fields select,.step-fields textarea{padding:7px 10px;border:1px solid var(--bordo);border-radius:8px;font-size:13px;background:#fff;font-family:inherit;flex:1;min-width:140px;color:var(--testo)}
+.step-fields input:focus,.step-fields select:focus{outline:2px solid var(--taupe)}
+.step-fields label{font-size:10px;color:var(--soft);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.step-fields .field-group{flex:1;min-width:140px;display:flex;flex-direction:column}
+.step-fields .field-group.wide{flex:2;min-width:240px}
+.radio-group{display:flex;gap:12px;align-items:center;padding:7px 10px;background:#fff;border:1px solid var(--bordo);border-radius:8px;flex-wrap:wrap}
+.radio-group label{margin:0;text-transform:none;font-weight:500;font-size:13px;display:flex;gap:4px;align-items:center;cursor:pointer;color:var(--testo)}
+.radio-group input{width:auto;margin:0}
+.usb-selector{display:flex;gap:4px;flex-wrap:wrap;padding:4px;background:#fff;border:1px solid var(--bordo);border-radius:8px}
+.usb-selector button{padding:5px 12px;border:1px solid var(--bordo);background:#fff;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;color:var(--testo);font-family:inherit}
+.usb-selector button.active{background:var(--taupe);color:#fff;border-color:var(--taupe)}
+.music-links{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:2;min-width:240px}
+.music-links input{width:100%}
+.card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;flex-wrap:wrap;gap:10px}
+.client-info{flex:1;min-width:200px}
+.card-footer{margin-top:14px;display:flex;justify-content:flex-end;gap:8px;padding-top:14px;border-top:1px solid var(--bordo);flex-wrap:wrap}
+.btn-view,.btn-edit,.btn-pdf,.btn-del{padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:12px;color:#fff;font-family:inherit;border:1px solid transparent;letter-spacing:.04em}
+.btn-view{background:var(--taupe);border-color:var(--taupe)}
+.btn-edit{background:#8b7355;border-color:#8b7355}
+.btn-pdf{background:var(--salvia);border-color:var(--salvia)}
+.btn-del{background:#fff;color:var(--taupe-scuro);border:1px solid var(--taupe)}
+.btn-del:hover{background:var(--taupe);color:#fff}
+.empty{text-align:center;padding:50px 20px;color:var(--soft);font-size:1.1em;background:var(--carta);border:1px solid var(--bordo);border-radius:14px}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:1000;justify-content:center;align-items:center;padding:20px;overflow-y:auto}
+.modal.active{display:flex}
+.modal-content{background:var(--carta);border-radius:14px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(120,100,70,.25);border:1px solid var(--bordo);margin:auto}
+.modal-header{background:var(--taupe-scuro);color:#fff;padding:20px 24px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:2}
+.modal-header h2{font-size:1.25em;font-family:Georgia,serif}
+.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.2em}
+.modal-body{padding:22px}
+.detail-row{margin-bottom:12px;padding:12px;background:rgba(251,251,251,0.9);border:1px solid var(--bordo);border-radius:10px}
+.detail-label{font-weight:600;color:var(--taupe-scuro);margin-bottom:5px;font-size:.9em}
+.detail-value{color:var(--testo);font-size:1em;word-break:break-word}
+.step-detail{padding:10px;margin:6px 0;background:#fff;border-radius:8px;border-left:4px solid var(--bordo)}
+.step-detail.completed{border-left-color:var(--taupe);background:var(--beige)}
+.step-detail .step-name{font-weight:600;margin-bottom:5px;color:var(--taupe-scuro)}
+.step-detail .step-date{color:var(--soft);font-size:.9em}
+.step-detail .step-extra-info{color:var(--soft);font-size:.85em;margin-top:3px;white-space:pre-wrap}
+.archive-header{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 6px 18px rgba(120,100,70,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+.search-box{flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--bordo);border-radius:999px;font-size:14px;font-family:inherit;background:#fff}
+.table-container{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:16px;margin-bottom:18px;box-shadow:0 6px 18px rgba(120,100,70,.08);overflow-x:auto}
+.table-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:12px}
+.workflow-table{width:100%;border-collapse:collapse;font-size:.95em}
+.workflow-table thead{background:var(--taupe-scuro);color:#fff;position:sticky;top:0;z-index:10}
+.workflow-table th{padding:11px 14px;text-align:left;font-weight:600;border:1px solid rgba(255,255,255,.15);font-size:.88em;white-space:nowrap}
+.workflow-table th.center{text-align:center}
+.workflow-table td{padding:11px 14px;border-bottom:1px solid var(--bordo);vertical-align:middle}
+.workflow-table tbody tr:nth-child(even){background:rgba(233,223,205,0.3)}
+.workflow-table tbody tr:nth-child(odd){background:#fff}
+.workflow-table tbody tr:hover{background:var(--beige)!important}
+.td-client{font-weight:700;color:var(--taupe-scuro);font-size:1.02em;font-family:Georgia,serif}
+.td-center{text-align:center}
+.badge-cell{display:inline-block;padding:4px 12px;border-radius:999px;color:#fff;font-size:.8em;font-weight:600;background:var(--taupe)}
+.pct-badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85em;font-weight:700;color:#fff;min-width:50px;text-align:center}
+.pct-100{background:var(--taupe-scuro)}
+.pct-high{background:var(--taupe)}
+.pct-mid{background:#8b7355}
+.pct-low{background:var(--beige);color:var(--testo)}
+.pct-zero{background:#e0e0e0;color:#666}
+.cell-actions{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap}
+.cell-actions button{padding:5px 10px;border:none;border-radius:999px;cursor:pointer;font-size:.85em;font-weight:600;color:#fff;font-family:inherit}
+.mini-view{background:var(--taupe)}
+.mini-edit{background:#8b7355}
+.mini-pdf{background:var(--salvia)}
+.mini-del{background:#fff;color:var(--taupe-scuro);border:1px solid var(--taupe)!important}
+.license-gate{min-height:60vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.license-gate .lg-card{background:var(--carta);border:1px solid var(--bordo);border-radius:16px;padding:40px;max-width:500px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(120,100,70,.15)}
+.license-gate h2{font-family:Georgia,serif;color:var(--taupe-scuro);margin-bottom:12px}
+.license-gate p{color:var(--soft);margin-bottom:18px}
+.license-gate button{background:var(--taupe);color:#fff;border:none;padding:10px 24px;border-radius:999px;cursor:pointer;font-weight:600}
+.admin-section{background:var(--beige);border:2px solid var(--taupe);border-radius:14px;padding:16px;margin:14px 0}
+.admin-section-head{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--taupe)}
+.admin-section-head input[type=text]{padding:8px;border:1px solid var(--taupe);border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;background:#fff;flex:1;min-width:180px}
+.admin-section-head input[type=color]{width:50px;height:38px;border:1px solid var(--taupe);border-radius:8px;cursor:pointer;background:#fff}
+.admin-step-row{background:#fff;border:1px solid var(--bordo);border-radius:10px;padding:10px;margin:8px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.admin-step-row input[type=text]{flex:2;min-width:200px;padding:7px 10px;border:1px solid var(--bordo);border-radius:8px;font-size:13px;font-family:inherit}
+.admin-step-row select{flex:1;min-width:180px;padding:7px 10px;border:1px solid var(--bordo);border-radius:8px;font-size:13px;font-family:inherit;background:#fff}
+.admin-step-row button{background:#fff;border:1px solid #8c2f2f;color:#8c2f2f;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit}
+.admin-step-row button:hover{background:#8c2f2f;color:#fff}
+.admin-add-step{background:#fff;color:var(--taupe-scuro);border:1px dashed var(--taupe);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;margin-top:6px}
+.admin-add-step:hover{background:var(--taupe);color:#fff;border-style:solid}
+.type-hint{font-size:11px;color:var(--soft);padding:6px 10px;background:rgba(255,255,255,.5);border-radius:6px;margin-top:4px;font-style:italic}
+@media(max-width:600px){.logo{font-size:1.3em}.actions button{padding:8px 12px;font-size:.85em}.modal-content{margin:10px}.step-fields{flex-direction:column}.step-fields .field-group{min-width:100%}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button onclick="history.back()">← Indietro</button>
+  <button onclick="goHome()">Home</button>
+  <button onclick="backupGlobale()">Backup globale</button>
+  <label class="topbar button" style="padding:8px 18px;background:#fff;border:1px solid var(--taupe);cursor:pointer;font-size:12px;border-radius:999px;font-family:inherit;color:var(--taupe-scuro);font-weight:600;letter-spacing:.06em;text-transform:uppercase">Ripristino globale<input type="file" hidden accept=".json" onchange="ripristinoGlobale(event)"></label>
+</div>
+
+<div id="licenseGate" class="license-gate">
+  <div class="lg-card">
+    <h2>Accesso non autorizzato</h2>
+    <p>Devi effettuare il login dalla dashboard principale.</p>
+    <button onclick="goHome()">Torna alla Home</button>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="container">
+    <header>
+      <div class="logo">AppCenterStudio Premium<span>Workflow Foto & Video</span></div>
+      <div class="actions">
+        <button onclick="toggleNewService()">+ Nuovo Servizio</button>
+        <button onclick="showArchive()">Archivio</button>
+        <button onclick="showTable()">Tabella Clienti</button>
+      </div>
+    </header>
+
+    <div id="adminBanner" class="admin-banner" style="display:none">
+      <span>🔧 <b>Modalità ADMIN attiva</b>: puoi configurare le sezioni del workflow (FOTO, VIDEO e quelle che aggiungi tu).</span>
+      <button onclick="openAdminConfig()">⚙️ Configura sezioni</button>
+    </div>
+
+    <div id="newService" class="new-service card">
+      <h2>Nuovo Servizio</h2>
+      <div class="form-row">
+        <input type="text" id="inputClient" placeholder="Nome cliente (es. Rossi - Bianchi)">
+        <input type="text" id="inputType" placeholder="Tipo servizio (es. Matrimonio, Battesimo)">
+      </div>
+      <div class="form-row">
+        <input type="date" id="inputDate">
+        <input type="text" id="inputVideographer" placeholder="Videografo/Collega (facoltativo)">
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="toggleNewService()">Annulla</button>
+        <button class="btn-primary" onclick="saveService()">Salva</button>
+      </div>
+    </div>
+
+    <div id="archiveView" style="display:none;">
+      <div class="archive-header">
+        <h2 style="margin:0;font-family:Georgia,serif;color:var(--taupe-scuro)">Archivio Servizi</h2>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <input type="text" class="search-box" id="searchBox" placeholder="Cerca cliente..." oninput="filterServices()">
+          <button onclick="generateArchivePDF()" class="btn-primary">PDF Archivio</button>
+          <button class="btn-ghost" onclick="showMain()">Torna alla Home</button>
+        </div>
+      </div>
+      <div id="archiveList"></div>
+    </div>
+
+    <div id="tableView" style="display:none;">
+      <div class="table-container">
+        <div class="table-header">
+          <h2 style="color:var(--taupe-scuro);font-size:1.2em;font-family:Georgia,serif;margin:0">Tabella Clienti — Stato Lavori</h2>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input type="text" class="search-box" id="tableSearch" placeholder="Cerca cliente..." oninput="renderTable()" style="min-width:200px;">
+            <button onclick="generateTablePDF()" class="btn-primary">PDF Tabella</button>
+            <button class="btn-ghost" onclick="showMain()">Torna alla Home</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="workflow-table" id="workflowTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <div id="servicesList"></div>
+  </div>
+</div>
+
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="detailTitle">Dettagli Servizio</h2>
+      <button class="modal-close" onclick="closeModal('detailModal')">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+  </div>
+</div>
+
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Modifica Servizio</h2>
+      <button class="modal-close" onclick="closeModal('editModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <input type="text" id="editClient" placeholder="Nome cliente">
+        <input type="text" id="editType" placeholder="Tipo servizio">
+      </div>
+      <div class="form-row">
+        <input type="date" id="editDate">
+        <input type="text" id="editVideographer" placeholder="Videografo/Collega">
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeModal('editModal')">Annulla</button>
+        <button class="btn-primary" onclick="saveEdit()">Salva Modifiche</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="adminConfigModal" class="modal">
+  <div class="modal-content" style="max-width:950px">
+    <div class="modal-header">
+      <h2>Configurazione Sezioni Workflow</h2>
+      <button class="modal-close" onclick="closeModal('adminConfigModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:14px;color:var(--soft);font-size:13px">Lo studio può aggiungere, modificare o eliminare sezioni e i relativi step.</p>
+      <div id="adminSectionsBox"></div>
+      <p style="margin-top:18px"><button class="btn-primary" onclick="addNewSection()">+ Aggiungi nuova sezione</button></p>
+      <div class="form-actions" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--bordo)">
+        <button class="btn-ghost" onclick="closeModal('adminConfigModal')">Annulla</button>
+        <button class="btn-primary" onclick="saveAdminConfig()">Salva configurazione</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let isAdmin = new URLSearchParams(location.search).get('admin') === '1' || sessionStorage.getItem('workflow_admin') === '1';
+if (new URLSearchParams(location.search).get('admin') === '1') sessionStorage.setItem('workflow_admin', '1');
+if (new URLSearchParams(location.search).get('admin') === '0') sessionStorage.removeItem('workflow_admin');
+
+function goHome() { location.href = '../index.html'; }
+
+function checkAuth() {
+  if (sessionStorage.getItem('loggedIn') !== 'true') {
+    document.getElementById('licenseGate').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  } else {
+    document.getElementById('licenseGate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    if (isAdmin) document.getElementById('adminBanner').style.display = 'flex';
+    renderServices();
+    renderTable();
+  }
+}
+
+const DEFAULT_SECTIONS = [
+  {id:'foto',name:'FOTO',color:'#a3937d',steps:[
+    {id:'s1',label:'Archiviazione foto (NAS + 3 HD)',type:'archive'},
+    {id:'s2',label:'Conversione RAW → JPEG',type:'simple'},
+    {id:'s3',label:'Selezione foto cliente',type:'selection'},
+    {id:'s4',label:'Grafica e ritocchi',type:'simple'},
+    {id:'s5',label:'Invio elaborato a laboratorio',type:'lab_send'},
+    {id:'s6',label:'Consegna da laboratorio',type:'lab_receive'},
+    {id:'s8',label:'Consegna album al cliente',type:'simple'},
+    {id:'s9',label:'Consegna file non elaborati al cliente',type:'simple'}
+  ]},
+  {id:'video',name:'VIDEO',color:'#8b7355',steps:[
+    {id:'s1',label:'Archiviazione video (NAS + 3 HD)',type:'archive'},
+    {id:'s2',label:'Musiche segnalate dal cliente',type:'music'},
+    {id:'s3',label:'Inviato per montaggio',type:'editor'},
+    {id:'s4',label:'Video montato ricevuto',type:'video_receive'},
+    {id:'s5',label:'Consegna video al cliente',type:'usb_or_link'}
+  ]}
+];
+
+const STEP_TYPES = {
+  simple:{label:'Semplice (solo data e stato)',hint:'Solo checkbox fatto e data.'},
+  archive:{label:'Archiviazione (NAS + 3 HD + chi)',hint:'Campi: fatto da, NAS, HD1, HD2, HD3.'},
+  selection:{label:'Selezione (studio/link + copertina)',hint:'Radio: studio o link. Poi articolo e azienda copertina.'},
+  lab_send:{label:'Invio a laboratorio (azienda)',hint:'Campo: azienda di stampa.'},
+  lab_receive:{label:'Ricevuto da laboratorio (azienda)',hint:'Campo: azienda consegna.'},
+  music:{label:'Musiche SI/NO + 4 link',hint:'Radio vuoto finché non scegli. Se SÌ appaiono 4 campi link.'},
+  editor:{label:'Collaboratore al montaggio',hint:'Campo: nome collaboratore.'},
+  video_receive:{label:'Video ricevuto (persona/link)',hint:'Radio vuoto finché non scegli. Se link, campo per link.'},
+  usb_or_link:{label:'USB (1-5) oppure link',hint:'Radio vuoto finché non scegli. USB con 5 pulsanti 1-5 o link.'}
+};
+
+let sectionsConfig = loadSectionsConfig();
+function loadSectionsConfig() {
+  try {
+    const raw = localStorage.getItem('workflow_sections_v1');
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+    const d = JSON.parse(raw);
+    if (!Array.isArray(d) || !d.length) return JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+    return d;
+  } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_SECTIONS)); }
+}
+function saveSectionsConfig() { localStorage.setItem('workflow_sections_v1', JSON.stringify(sectionsConfig)); }
+
+let services = JSON.parse(localStorage.getItem('gl_services_v2') || '[]');
+let editingId = null;
+function uid() { return 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function migrateService(s) {
+  if (!s) return null;
+  if (!s.id) s.id = uid();
+  if (!s.client) s.client = 'Cliente';
+  if (!s.type) s.type = 'Servizio';
+  if (!s.createdAt) s.createdAt = new Date().toISOString();
+  if (s.videographer === undefined) s.videographer = '';
+  if (!s.sectionsData) s.sectionsData = {};
+  sectionsConfig.forEach(sec => {
+    if (!s.sectionsData[sec.id]) s.sectionsData[sec.id] = {};
+    sec.steps.forEach(st => {
+      if (!s.sectionsData[sec.id][st.id]) s.sectionsData[sec.id][st.id] = {done:false, date:'', extra:{}};
+      if (!s.sectionsData[sec.id][st.id].extra) s.sectionsData[sec.id][st.id].extra = {};
+    });
+  });
+  return s;
+}
+function save() { localStorage.setItem('gl_services_v2', JSON.stringify(services)); }
+
+function renderStepFields(serviceId, sectionId, stepDef, stepData) {
+  const d = stepData || {done:false, date:'', extra:{}};
+  const ex = d.extra || {};
+  const F = (field, label, html) => `<div class="field-group${field==='wide'?' wide':''}"><label>${label}</label>${html}</div>`;
+  const inp = (field, ph, val) => `<input type="text" placeholder="${ph}" value="${(val||'').replace(/"/g,'&quot;')}" onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','${field}',this.value)">`;
+  const sel = (field, opts, val) => `<select onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','${field}',this.value)">${opts.map(o=>`<option value="${o.v}" ${val===o.v?'selected':''}>${o.l}</option>`).join('')}</select>`;
+  
+  switch(stepDef.type) {
+    case 'archive':
+      return `${F('','Fatto da',sel('archivedBy',[{v:'',l:'-- Seleziona --'},{v:'Studio',l:'Studio'},{v:'Collaboratore esterno',l:'Collaboratore esterno'}],ex.archivedBy||''))}
+      ${F('','NAS',inp('nas','Es. NAS-01',ex.nas))}
+      ${F('','HD 1',inp('hd1','Es. HD-A',ex.hd1))}
+      ${F('','HD 2',inp('hd2','Es. HD-B',ex.hd2))}
+      ${F('','HD 3',inp('hd3','Es. HD-C',ex.hd3))}`;
+    case 'selection':
+      return `<div class="field-group wide"><label>Selezione fatta</label>
+        <div class="radio-group">
+         <label><input type="radio" name="sel_${serviceId}_${sectionId}_${stepDef.id}" value="studio" ${ex.method==='studio'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','method','studio')"> In studio</label>
+         <label><input type="radio" name="sel_${serviceId}_${sectionId}_${stepDef.id}" value="link" ${ex.method==='link'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','method','link')"> Tramite link</label>
+        </div></div>
+       ${F('','Copertina - articolo',inp('coverArticle','Es. ART-2024-001',ex.coverArticle))}
+       ${F('','Copertina - azienda',inp('coverCompany','Es. Grafiche Rossi',ex.coverCompany))}`;
+    case 'lab_send': return `${F('wide','Azienda laboratorio (stampa)',inp('labCompany','Nome azienda',ex.labCompany))}`;
+    case 'lab_receive': return `${F('wide','Azienda consegna',inp('labCompany','Nome azienda',ex.labCompany))}`;
+    case 'music':
+      return `<div class="field-group"><label>Musiche cliente</label>
+        <div class="radio-group">
+         <label><input type="radio" name="mu_${serviceId}_${sectionId}_${stepDef.id}" value="no" ${ex.hasMusic==='no'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','hasMusic','no')"> NO</label>
+         <label><input type="radio" name="mu_${serviceId}_${sectionId}_${stepDef.id}" value="si" ${ex.hasMusic==='si'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','hasMusic','si')"> SÌ</label>
+        </div></div>
+       <div class="field-group wide"><label>Link musiche (max 4)</label>
+        <div class="music-links">
+         <input type="text" placeholder="Link 1" value="${(ex.music1||'').replace(/"/g,'&quot;')}" onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','music1',this.value)">
+         <input type="text" placeholder="Link 2" value="${(ex.music2||'').replace(/"/g,'&quot;')}" onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','music2',this.value)">
+         <input type="text" placeholder="Link 3" value="${(ex.music3||'').replace(/"/g,'&quot;')}" onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','music3',this.value)">
+         <input type="text" placeholder="Link 4" value="${(ex.music4||'').replace(/"/g,'&quot;')}" onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','music4',this.value)">
+        </div></div>`;
+    case 'editor': return `${F('wide','Collaboratore al montaggio',inp('editor','Nome del collaboratore',ex.editor))}`;
+    case 'video_receive':
+      return `<div class="field-group"><label>Ricevuto</label>
+        <div class="radio-group">
+         <label><input type="radio" name="vr_${serviceId}_${sectionId}_${stepDef.id}" value="person" ${ex.method==='person'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','method','person')"> Di persona</label>
+         <label><input type="radio" name="vr_${serviceId}_${sectionId}_${stepDef.id}" value="link" ${ex.method==='link'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','method','link')"> Tramite link</label>
+        </div></div>
+       ${F('wide','Link (se tramite link)',inp('link','https://...',ex.link))}`;
+    case 'usb_or_link':
+      const usbActive = +ex.usbCount || 0;
+      return `<div class="field-group"><label>Modalità consegna</label>
+        <div class="radio-group">
+         <label><input type="radio" name="dl_${serviceId}_${sectionId}_${stepDef.id}" value="usb" ${ex.method==='usb'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','method','usb')"> Con USB</label>
+         <label><input type="radio" name="dl_${serviceId}_${sectionId}_${stepDef.id}" value="link" ${ex.method==='link'?'checked':''} onchange="updateExtra('${serviceId}','${sectionId}','${stepDef.id}','method','link')"> Tramite link</label>
+        </div></div>
+       <div class="field-group"><label>Numero USB (1-5)</label>
+        <div class="usb-selector">
+         ${[1,2,3,4,5].map(n=>`<button type="button" class="${usbActive===n?'active':''}" onclick="setUsbCount('${serviceId}','${sectionId}','${stepDef.id}',${n})">${n}</button>`).join('')}
+        </div></div>
+       ${F('wide','Link (se tramite link)',inp('link','https://...',ex.link))}`;
+    default: return '';
+  }
+}
+
+function renderStepRow(serviceId, sectionId, stepDef) {
+  const s = services.find(x => x.id === serviceId); if (!s) return '';
+  const secData = s.sectionsData?.[sectionId] || {};
+  const d = secData[stepDef.id] || {done:false, date:'', extra:{}};
+  const fields = renderStepFields(serviceId, sectionId, stepDef, d);
+  return `<div class="step ${d.done?'done':''}">
+   <div class="step-main">
+    <input type="checkbox" ${d.done?'checked':''} onchange="toggleStep('${serviceId}','${sectionId}','${stepDef.id}',this.checked)">
+    <div class="step-label">${stepDef.label}</div>
+    <div class="field-group" style="min-width:160px"><label>Data</label><input type="date" value="${d.date||''}" onchange="updateDate('${serviceId}','${sectionId}','${stepDef.id}',this.value)"></div>
+   </div>
+   ${fields ? `<div class="step-fields">${fields}</div>` : ''}
+  </div>`;
+}
+
+function renderSection(serviceId, sec) {
+  return `<div class="section-title" style="background:${sec.color||'var(--taupe)'}"><span>${sec.name}</span></div>` + sec.steps.map(st => renderStepRow(serviceId, sec.id, st)).join('');
+}
+
+function countAll(s) { let done=0, total=0; sectionsConfig.forEach(sec => sec.steps.forEach(st => { total++; const d = s.sectionsData?.[sec.id]?.[st.id]; if (d && d.done) done++; })); return {done, total}; }
+function getLastStepInfo(s) { let last=null; sectionsConfig.forEach(sec => sec.steps.forEach(st => { const d = s.sectionsData?.[sec.id]?.[st.id]; if (d && d.done && d.date) { if (!last || d.date > last.date) last = {label:st.label, date:d.date, section:sec.name, color:sec.color}; } })); return last; }
+function formatDate(dateStr) { if (!dateStr) return '—'; const parts = String(dateStr).split('-'); if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`; return dateStr; }
+
+function renderServices(data = services) {
+  const list = document.getElementById('servicesList');
+  if (data.length === 0) { list.innerHTML = '<div class="empty">Nessun servizio. Clicca su "+ Nuovo Servizio" per iniziare.</div>'; return; }
+  list.innerHTML = data.map(s => {
+    const {done, total} = countAll(s); const pct = total ? Math.round((done/total)*100) : 0;
+    const progressHtml = `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-text">Avanzamento: ${done}/${total} (${pct}%)</div>`;
+    return `<div class="card">
+     <div class="card-header" onclick="toggleSteps('${s.id}')">
+      <div class="client-info">
+       <div class="client-name">${s.client}</div>
+       <div class="client-date">${s.date ? formatDate(s.date) : ''}${s.type ? ' · ' + s.type : ''}</div>
+       ${s.videographer ? `<div class="videographer-info">Videografo: ${s.videographer}</div>` : ''}
+      </div>
+      <div class="service-badge">${s.type || 'Servizio'}</div>
+     </div>
+     ${progressHtml}
+     <div class="steps" id="steps-${s.id}">${sectionsConfig.map(sec => renderSection(s.id, sec)).join('')}</div>
+     <div class="card-footer">
+      <button class="btn-view" onclick="event.stopPropagation();viewService('${s.id}')">Visualizza</button>
+      <button class="btn-edit" onclick="event.stopPropagation();editService('${s.id}')">Modifica</button>
+      <button class="btn-pdf" onclick="event.stopPropagation();generatePDF('${s.id}')">PDF</button>
+      <button class="btn-del" onclick="event.stopPropagation();deleteService('${s.id}')">Elimina</button>
+     </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSteps(id) { document.getElementById('steps-' + id).classList.toggle('open'); }
+
+function ensureStep(serviceId, sectionId, stepId) {
+  const s = services.find(x => x.id === serviceId); if (!s) return null;
+  if (!s.sectionsData) s.sectionsData = {};
+  if (!s.sectionsData[sectionId]) s.sectionsData[sectionId] = {};
+  if (!s.sectionsData[sectionId][stepId]) s.sectionsData[sectionId][stepId] = {done:false, date:'', extra:{}};
+  if (!s.sectionsData[sectionId][stepId].extra) s.sectionsData[sectionId][stepId].extra = {};
+  return s.sectionsData[sectionId][stepId];
+}
+
+function toggleStep(serviceId, sectionId, stepId, checked) {
+  const d = ensureStep(serviceId, sectionId, stepId); if (!d) return;
+  if (checked && !d.date) d.date = new Date().toISOString().slice(0,10);
+  d.done = checked;
+  save(); renderServices();
+  document.getElementById('steps-' + serviceId).classList.add('open');
+  renderTable();
+}
+function updateDate(serviceId, sectionId, stepId, val) { const d = ensureStep(serviceId, sectionId, stepId); if (!d) return; d.date = val; save(); }
+function updateExtra(serviceId, sectionId, stepId, field, val) { const d = ensureStep(serviceId, sectionId, stepId); if (!d) return; d.extra[field] = val; save(); }
+function setUsbCount(serviceId, sectionId, stepId, n) { const d = ensureStep(serviceId, sectionId, stepId); if (!d) return; d.extra.usbCount = n; d.extra.method = 'usb'; save(); renderServices(); document.getElementById('steps-' + serviceId).classList.add('open'); }
+
+function toggleNewService() { document.getElementById('newService').classList.toggle('open'); }
+function saveService() {
+  const client = document.getElementById('inputClient').value.trim();
+  const type = document.getElementById('inputType').value.trim();
+  const date = document.getElementById('inputDate').value;
+  const videographer = document.getElementById('inputVideographer').value.trim();
+  if (!client) return alert('Inserisci il nome del cliente.');
+  const sectionsData = {};
+  sectionsConfig.forEach(sec => {
+    sectionsData[sec.id] = {};
+    sec.steps.forEach(st => { sectionsData[sec.id][st.id] = {done:false, date:'', extra:{}}; });
+  });
+  services.unshift({id:uid(), client, type, date, videographer, sectionsData, createdAt:new Date().toISOString()});
+  save();
+  document.getElementById('inputClient').value = '';
+  document.getElementById('inputType').value = '';
+  document.getElementById('inputDate').value = '';
+  document.getElementById('inputVideographer').value = '';
+  toggleNewService();
+  renderServices();
+}
+function deleteService(id) { if (!confirm('Eliminare questo servizio?')) return; services = services.filter(x => x.id !== id); save(); renderServices(); renderTable(); }
+function editService(id) {
+  const s = services.find(x => x.id === id); if (!s) return;
+  editingId = id;
+  document.getElementById('editClient').value = s.client;
+  document.getElementById('editType').value = s.type;
+  document.getElementById('editDate').value = s.date || '';
+  document.getElementById('editVideographer').value = s.videographer || '';
+  document.getElementById('editModal').classList.add('active');
+}
+function saveEdit() {
+  if (!editingId) return;
+  const s = services.find(x => x.id === editingId); if (!s) return;
+  s.client = document.getElementById('editClient').value.trim();
+  s.type = document.getElementById('editType').value.trim();
+  s.date = document.getElementById('editDate').value;
+  s.videographer = document.getElementById('editVideographer').value.trim();
+  save(); closeModal('editModal'); renderServices(); renderTable();
+}
+
+function viewService(id) {
+  const s = services.find(x => x.id === id); if (!s) return;
+  const {done, total} = countAll(s); const pct = total ? Math.round((done/total)*100) : 0;
+  let html = `<div class="detail-row"><div class="detail-label">Cliente</div><div class="detail-value">${s.client}</div></div>
+   <div class="detail-row"><div class="detail-label">Tipo servizio</div><div class="detail-value">${s.type || '—'}</div></div>
+   <div class="detail-row"><div class="detail-label">Data evento</div><div class="detail-value">${s.date ? formatDate(s.date) : 'Non specificata'}</div></div>
+   <div class="detail-row"><div class="detail-label">Videografo/Collega</div><div class="detail-value">${s.videographer || 'Non specificato'}</div></div>
+   <div class="detail-row" style="background:var(--beige)"><div class="detail-label">Avanzamento globale</div><div class="detail-value">${done}/${total} completati (${pct}%)</div></div>`;
+  sectionsConfig.forEach(sec => {
+    html += `<h3 style="margin:20px 0 10px;padding:10px;background:${sec.color||'var(--taupe)'};color:#fff;border-radius:10px;font-family:Georgia,serif">${sec.name}</h3>`;
+    sec.steps.forEach(st => { const d = s.sectionsData?.[sec.id]?.[st.id] || {done:false, date:'', extra:{}}; html += renderStepDetail(st, d); });
+  });
+  document.getElementById('detailTitle').textContent = `${s.client} - ${s.type || 'Servizio'}`;
+  document.getElementById('detailBody').innerHTML = html;
+  document.getElementById('detailModal').classList.add('active');
+}
+function renderStepDetail(st, d) {
+  const status = d.done ? '✓ Completato' : '◻ In attesa';
+  const dateStr = d.date ? ` — ${formatDate(d.date)}` : '';
+  const info = buildExtraInfo(st, d.extra || {});
+  return `<div class="step-detail ${d.done?'completed':''}"><div class="step-name">${status} — ${st.label}${dateStr}</div>${info ? `<div class="step-extra-info">${info}</div>` : ''}</div>`;
+}
+function buildExtraInfo(st, ex) {
+  const parts = [];
+  switch(st.type) {
+    case 'archive': if(ex.archivedBy) parts.push(`Fatto da: ${ex.archivedBy}`); if(ex.nas) parts.push(`NAS: ${ex.nas}`); if(ex.hd1) parts.push(`HD 1: ${ex.hd1}`); if(ex.hd2) parts.push(`HD 2: ${ex.hd2}`); if(ex.hd3) parts.push(`HD 3: ${ex.hd3}`); break;
+    case 'selection': if(ex.method) parts.push(`Metodo: ${ex.method==='studio'?'in studio':'tramite link'}`); if(ex.coverArticle) parts.push(`Copertina art: ${ex.coverArticle}`); if(ex.coverCompany) parts.push(`Copertina az: ${ex.coverCompany}`); break;
+    case 'lab_send': case 'lab_receive': if(ex.labCompany) parts.push(`Azienda: ${ex.labCompany}`); break;
+    case 'music': parts.push(`Musiche: ${ex.hasMusic==='si'?'SÌ':'NO'}`); if(ex.hasMusic==='si') { [ex.music1,ex.music2,ex.music3,ex.music4].filter(Boolean).forEach((m,i) => parts.push(`Link ${i+1}: ${m}`)); } break;
+    case 'editor': if(ex.editor) parts.push(`Collaboratore: ${ex.editor}`); break;
+    case 'video_receive': if(ex.method) parts.push(`Ricevuto: ${ex.method==='link'?'tramite link':'di persona'}`); if(ex.method==='link' && ex.link) parts.push(`Link: ${ex.link}`); break;
+    case 'usb_or_link': if(ex.method==='link') { parts.push('Consegna: link'); if(ex.link) parts.push(`Link: ${ex.link}`); } else if(ex.usbCount) parts.push(`Consegna: USB x ${ex.usbCount}`); break;
+  }
+  return parts.join('\n');
+}
+
+function showArchive() { document.getElementById('servicesList').style.display = 'none'; document.getElementById('tableView').style.display = 'none'; document.getElementById('newService').classList.remove('open'); document.getElementById('archiveView').style.display = 'block'; filterServices(); }
+function showTable() { document.getElementById('servicesList').style.display = 'none'; document.getElementById('archiveView').style.display = 'none'; document.getElementById('newService').classList.remove('open'); document.getElementById('tableView').style.display = 'block'; renderTable(); }
+function showMain() { document.getElementById('archiveView').style.display = 'none'; document.getElementById('tableView').style.display = 'none'; document.getElementById('servicesList').style.display = 'block'; renderServices(); }
+
+function filterServices() {
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  let filtered = services;
+  if (search) filtered = filtered.filter(s => s.client.toLowerCase().includes(search) || (s.videographer||'').toLowerCase().includes(search));
+  const list = document.getElementById('archiveList');
+  if (filtered.length === 0) { list.innerHTML = '<div class="empty">Nessun servizio trovato.</div>'; return; }
+  list.innerHTML = filtered.map(s => {
+    const {done, total} = countAll(s); const pct = total ? Math.round((done/total)*100) : 0;
+    return `<div class="card"><div class="card-header"><div class="client-info"><div class="client-name">${s.client}</div><div class="client-date">${s.date?formatDate(s.date):''}${s.type?' · '+s.type:''}</div>${s.videographer?`<div class="videographer-info">Videografo: ${s.videographer}</div>`:''}</div><div class="service-badge">${s.type||'Servizio'}</div></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-text">Completamento: ${pct}%</div><div class="card-footer"><button class="btn-view" onclick="viewService('${s.id}')">Visualizza</button><button class="btn-edit" onclick="editService('${s.id}')">Modifica</button><button class="btn-pdf" onclick="generatePDF('${s.id}')">PDF</button><button class="btn-del" onclick="deleteService('${s.id}')">Elimina</button></div></div>`;
+  }).join('');
+}
+
+function renderTable() {
+  const search = (document.getElementById('tableSearch')?.value || '').toLowerCase();
+  let filtered = services.slice();
+  if (search) filtered = filtered.filter(s => s.client.toLowerCase().includes(search) || s.type.toLowerCase().includes(search) || (s.videographer||'').toLowerCase().includes(search));
+  filtered.sort((a,b) => a.client.localeCompare(b.client, 'it'));
+  const table = document.getElementById('workflowTable');
+  if (filtered.length === 0) { table.innerHTML = '<tr><td colspan="10" style="padding:40px;text-align:center;color:#888">Nessun servizio trovato</td></tr>'; return; }
+  const secHeaders = sectionsConfig.map(sec => `<th class="center">${sec.name}</th>`).join('');
+  let thead = `<thead><tr><th>#</th><th>Cliente</th><th class="center">Tipo</th><th class="center">Data</th><th>Videografo</th>${secHeaders}<th>Ultimo step</th><th class="center">Stato</th><th class="center">Azioni</th></tr></thead>`;
+  let tbody = '<tbody>';
+  filtered.forEach((s, idx) => {
+    const last = getLastStepInfo(s);
+    const {done, total} = countAll(s);
+    const pct = total ? Math.round((done/total)*100) : 0;
+    const pctClass = pct===100 ? 'pct-100' : pct>=70 ? 'pct-high' : pct>=40 ? 'pct-mid' : pct>0 ? 'pct-low' : 'pct-zero';
+    const secCells = sectionsConfig.map(sec => {
+      const sd = s.sectionsData?.[sec.id] || {};
+      const doneSec = sec.steps.filter(st => sd[st.id]?.done).length;
+      const pctSec = sec.steps.length ? Math.round((doneSec/sec.steps.length)*100) : 0;
+      return `<td class="td-center"><span class="pct-badge ${pctClass}">${doneSec}/${sec.steps.length}<br><small>${pctSec}%</small></span></td>`;
+    }).join('');
+    tbody += `<tr><td style="color:#888">${idx+1}</td><td class="td-client">${s.client}</td><td class="td-center"><span class="badge-cell">${s.type||'—'}</span></td><td class="td-center">${s.date?formatDate(s.date):'—'}</td><td>${s.videographer||'—'}</td>${secCells}<td>${last ? `<small style="color:var(--soft)">${last.section}</small><br><b>${last.label}</b><br><small>${formatDate(last.date)}</small>` : '<span style="color:#aaa;font-style:italic">—</span>'}</td><td class="td-center"><span class="pct-badge ${pctClass}">${pct}%</span></td><td><div class="cell-actions"><button class="mini-view" onclick="viewService('${s.id}')" title="Visualizza">V</button><button class="mini-edit" onclick="editService('${s.id}')" title="Modifica">M</button><button class="mini-pdf" onclick="generatePDF('${s.id}')" title="PDF">P</button><button class="mini-del" onclick="deleteService('${s.id}')" title="Elimina">X</button></div></td></tr>`;
+  });
+  tbody += '</tbody>';
+  table.innerHTML = thead + tbody;
+}
+
+async function generatePDF(id) {
+  const s = services.find(x => x.id === id); if (!s) return;
+  if (!window.jspdf) return alert('Libreria PDF non caricata.');
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFillColor(111,99,83); doc.rect(0,0,210,35,'F'); doc.setTextColor(255); doc.setFontSize(18); doc.setFont('helvetica','bold'); doc.text('AppCenterStudio Premium — Workflow',105,15,{align:'center'});
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.text(`${s.client} — ${s.type||'Servizio'} — ${formatDate(s.date)}`,105,24,{align:'center'}); doc.setTextColor(17); doc.setFontSize(11);
+  let y = 45;
+  if (s.videographer) { doc.text(`Videografo/Collega: ${s.videographer}`,15,y); y += 7; }
+  const {done, total} = countAll(s); const pct = total ? Math.round((done/total)*100) : 0;
+  doc.text(`Avanzamento globale: ${done}/${total} (${pct}%)`,15,y); y += 10;
+  sectionsConfig.forEach(sec => {
+    if (y > 265) { doc.addPage(); y = 20; }
+    const rgb = hexToRgb(sec.color || '#a3937d');
+    doc.setFillColor(rgb.r, rgb.g, rgb.b); doc.rect(15,y-4,180,8,'F'); doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text(sec.name,18,y+2); doc.setTextColor(17); y += 8;
+    sec.steps.forEach(st => {
+      if (y > 275) { doc.addPage(); y = 20; }
+      const d = s.sectionsData?.[sec.id]?.[st.id] || {done:false, date:'', extra:{}};
+      doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text(`${d.done?'✓':'◻'} ${st.label}${d.date?' — '+formatDate(d.date):''}`,18,y); y += 5;
+      const info = buildExtraInfo(st, d.extra || {});
+      if (info) {
+        doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(90);
+        info.split('\n').forEach(l => { if (y > 275) { doc.addPage(); y = 20; } doc.text('    ' + l, 18, y); y += 4; });
+        doc.setTextColor(17);
+      }
+      y += 2;
+    });
+    y += 3;
+  });
+  doc.setFontSize(8); doc.setTextColor(150); doc.text(`Generato il ${new Date().toLocaleDateString('it-IT')}`,105,290,{align:'center'});
+  doc.save(`Workflow_${s.client.replace(/\s+/g,'_')}_${s.type||'servizio'}.pdf`);
+}
+function hexToRgb(hex) { const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return r ? {r:parseInt(r[1],16), g:parseInt(r[2],16), b:parseInt(r[3],16)} : {r:163, g:147, b:125}; }
+
+function generateArchivePDF() {
+  if (!services.length) return alert('Archivio vuoto.');
+  if (!window.jspdf || !window.jspdf.autoTable) return alert('Libreria PDF non caricata.');
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
+  doc.setFillColor(111,99,83); doc.rect(0,0,297,25,'F'); doc.setTextColor(255); doc.setFontSize(18); doc.text('AppCenterStudio Premium — Archivio Servizi',14,16);
+  const head = [['#','Cliente','Tipo','Data','Videografo', ...sectionsConfig.map(s=>s.name), 'Ultimo step', 'Stato']];
+  const body = services.map((s, idx) => {
+    const last = getLastStepInfo(s);
+    const {done, total} = countAll(s);
+    const pct = total ? Math.round((done/total)*100) : 0;
+    return [idx+1, s.client, s.type||'—', s.date?formatDate(s.date):'—', s.videographer||'—', ...sectionsConfig.map(sec => {
+      const sd = s.sectionsData?.[sec.id] || {};
+      const d = sec.steps.filter(st => sd[st.id]?.done).length;
+      return `${d}/${sec.steps.length}`;
+    }), last ? `${last.label} (${formatDate(last.date)})` : '—', `${pct}%`];
+  });
+  doc.autoTable({startY:30, head, body, theme:'grid', headStyles:{fillColor:[111,99,83], textColor:255, fontSize:7, halign:'center'}, bodyStyles:{fontSize:7, cellPadding:2}, alternateRowStyles:{fillColor:[251,249,245]}});
+  doc.save(`Workflow_Archivio_${new Date().toISOString().slice(0,10)}.pdf`);
+}
+function generateTablePDF() { generateArchivePDF(); }
+
+let adminDraft = null;
+function openAdminConfig() { adminDraft = JSON.parse(JSON.stringify(sectionsConfig)); renderAdminBox(); document.getElementById('adminConfigModal').classList.add('active'); }
+function renderAdminBox() {
+  const box = document.getElementById('adminSectionsBox');
+  box.innerHTML = adminDraft.map((sec, si) => {
+    const stepsHtml = sec.steps.map((st, sti) => {
+      const typeOpts = Object.keys(STEP_TYPES).map(k => `<option value="${k}" ${st.type===k?'selected':''}>${STEP_TYPES[k].label}</option>`).join('');
+      const hint = STEP_TYPES[st.type]?.hint || '';
+      return `<div class="admin-step-row"><input type="text" value="${(st.label||'').replace(/"/g,'&quot;')}" onchange="adminDraft[${si}].steps[${sti}].label=this.value" placeholder="Nome dello step"><select onchange="adminDraft[${si}].steps[${sti}].type=this.value;renderAdminBox()">${typeOpts}</select><button onclick="adminDraft[${si}].steps.splice(${sti},1);renderAdminBox()">🗑 Rimuovi</button></div><div class="type-hint">${hint}</div>`;
+    }).join('');
+    return `<div class="admin-section"><div class="admin-section-head"><input type="text" value="${(sec.name||'').replace(/"/g,'&quot;')}" onchange="adminDraft[${si}].name=this.value" placeholder="Nome sezione"><input type="color" value="${sec.color||'#a3937d'}" onchange="adminDraft[${si}].color=this.value" title="Colore"><button style="background:#8c2f2f;color:#fff;border-color:#8c2f2f" onclick="if(confirm('Eliminare la sezione ${sec.name}?')){adminDraft.splice(${si},1);renderAdminBox()}">🗑 Elimina sezione</button></div>${stepsHtml}<button class="admin-add-step" onclick="adminDraft[${si}].steps.push({id:'s'+Date.now().toString(36),label:'Nuovo step',type:'simple'});renderAdminBox()">+ Aggiungi step</button></div>`;
+  }).join('');
+}
+function addNewSection() { adminDraft.push({id:'sec_'+Date.now().toString(36), name:'NUOVA SEZIONE', color:'#a3937d', steps:[{id:'s1', label:'Primo step', type:'simple'}]}); renderAdminBox(); }
+function saveAdminConfig() {
+  if (!adminDraft || !adminDraft.length) return alert('Almeno una sezione deve esistere.');
+  sectionsConfig = adminDraft;
+  saveSectionsConfig();
+  services = services.map(migrateService).filter(s => s !== null);
+  save();
+  closeModal('adminConfigModal');
+  renderServices();
+  renderTable();
+  alert('Configurazione salvata.');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('active'); if (id === 'adminConfigModal') adminDraft = null; if (id === 'editModal') editingId = null; }
+
+function backupGlobale() {
+  const d = {};
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); d[k] = localStorage.getItem(k); }
+  const blob = new Blob([JSON.stringify({app:'AppCenterStudioPremium', exportedAt:new Date().toISOString(), data:d}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'AppCenterStudio_BACKUP_GLOBALE_' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+  alert('Backup globale scaricato.');
+}
+function ripristinoGlobale(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const obj = JSON.parse(ev.target.result);
+      const d = obj.data || obj;
+      if (typeof d !== 'object') throw new Error('File non valido.');
+      if (!confirm('Ripristinare il backup globale (' + Object.keys(d).length + ' voci)?')) return;
+      Object.keys(d).forEach(k => localStorage.setItem(k, d[k]));
+      alert('Backup ripristinato.');
+      location.reload();
+    } catch (err) { alert('Errore: ' + err.message); }
+  };
+  r.readAsText(f);
+}
+
+services = services.map(migrateService).filter(s => s !== null);
+save();
+checkAuth();
+</script>
+</body>
+</html>
