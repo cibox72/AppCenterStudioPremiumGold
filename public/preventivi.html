@@ -489,65 +489,157 @@ function creaPDF(tipoDoc){
 }
 
 function generaPDFPiano(){
- raccogli();if(!current.piano.length)return alert('Aggiungi almeno una voce al piano.');
- const doc=new jspdf.jsPDF();
- const W=doc.internal.pageSize.getWidth();
- const t=calcolaTotali(current);
- let y=headerPDF(doc,'PIANO DI PAGAMENTO');
- doc.setFillColor(246,246,246);doc.setDrawColor(225,225,225);
- doc.roundedRect(15,y,W-30,14,2,2,'FD');
- doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(17,17,17);
- doc.text('Cliente: '+nomeCliente(current),19,y+6);
- doc.text('Rif. N. '+(current.numero||'—'),19,y+11);
- doc.setFontSize(11);doc.text('Importo totale: € '+fmt(t.tot),W-19,y+9,{align:'right'});
- y+=20;
- doc.setFillColor(17,17,17);doc.rect(15,y,W-30,8,'F');
- doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);
- doc.text('N.',19,y+5.5);doc.text('DESCRIZIONE RATA',30,y+5.5);doc.text('IMPORTO',W-19,y+5.5,{align:'right'});
- y+=8;
- doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(40,40,40);
- current.piano.forEach((p,i)=>{
-  if(y>265){doc.addPage();y=20;}
-  if(i%2===0){doc.setFillColor(250,250,250);doc.rect(15,y,W-30,7,'F');}
-  doc.text(String(i+1),19,y+5);
-  doc.text(p.descrizione||'Rata '+(i+1),30,y+5);
-  doc.text('€ '+fmt(p.importo||0),W-19,y+5,{align:'right'});
-  y+=7;
+ raccogli();
+ if(!current.piano.length) return alert('Aggiungi almeno una voce al piano.');
+ 
+ const doc = new jspdf.jsPDF();
+ const W = doc.internal.pageSize.getWidth();
+ const t = calcolaTotali(current);
+ 
+ // 1. Testata Professionale (Nera con filetto oro)
+ doc.setFillColor(17, 17, 17);
+ doc.rect(0, 0, W, 28, 'F');
+ doc.setFillColor(201, 162, 39); // Oro
+ doc.rect(0, 28, W, 2, 'F');
+ 
+ doc.setTextColor(255, 255, 255);
+ doc.setFont('times', 'bold');
+ doc.setFontSize(16);
+ doc.text((studioIdent.nome || 'STUDIO FOTOGRAFICO').toUpperCase(), 15, 12);
+ 
+ doc.setFont('helvetica', 'normal');
+ doc.setFontSize(8);
+ doc.setTextColor(200, 200, 200);
+ doc.text([studioIdent.indirizzo, studioIdent.telefono, studioIdent.email].filter(Boolean).join('  |  '), 15, 18);
+ if(studioIdent.piva) doc.text('P.IVA: ' + studioIdent.piva, 15, 24);
+ 
+ doc.setTextColor(17, 17, 17);
+ doc.setFont('times', 'bold');
+ doc.setFontSize(22);
+ doc.text('PIANO DI PAGAMENTO', W - 15, 16, {align: 'right'});
+ doc.setFont('helvetica', 'normal');
+ doc.setFontSize(9);
+ doc.setTextColor(100, 100, 100);
+ doc.text('Rif. ' + (current.numero || '—') + ' del ' + fmtData(current.dataCreazione), W - 15, 24, {align: 'right'});
+ 
+ let y = 40;
+ 
+ // 2. Box Cliente e Totale
+ doc.setFillColor(248, 248, 248);
+ doc.setDrawColor(220, 220, 220);
+ doc.roundedRect(15, y, W - 30, 16, 2, 2, 'FD');
+ doc.setFont('helvetica', 'bold');
+ doc.setFontSize(9);
+ doc.setTextColor(17, 17, 17);
+ doc.text('CLIENTE: ' + nomeCliente(current), 20, y + 7);
+ doc.setFontSize(11);
+ doc.text('IMPORTO TOTALE: € ' + fmt(t.tot), W - 20, y + 9, {align: 'right'});
+ doc.setFont('helvetica', 'normal');
+ doc.setFontSize(8);
+ doc.setTextColor(100, 100, 100);
+ doc.text('Telefono: ' + (current.a.telefono || 'N/D') + '  |  Email: ' + (current.a.email || 'N/D'), 20, y + 13);
+ 
+ y += 24;
+ 
+ // 3. Tabella Rate
+ doc.setFillColor(17, 17, 17);
+ doc.rect(15, y, W - 30, 9, 'F');
+ doc.setTextColor(255, 255, 255);
+ doc.setFont('helvetica', 'bold');
+ doc.setFontSize(8);
+ doc.text('N.', 20, y + 6);
+ doc.text('DESCRIZIONE RATA', 35, y + 6);
+ doc.text('IMPORTO', W - 20, y + 6, {align: 'right'});
+ y += 9;
+ 
+ doc.setFont('helvetica', 'normal');
+ doc.setFontSize(9.5);
+ doc.setTextColor(40, 40, 40);
+ 
+ current.piano.forEach((p, i) => {
+  if(y > 260) {
+   footerPDF(doc);
+   doc.addPage();
+   y = 20;
+  }
+  if(i % 2 === 0) {
+   doc.setFillColor(250, 250, 250);
+   doc.rect(15, y, W - 30, 8, 'F');
+  }
+  doc.text(String(i + 1), 20, y + 5.5);
+  doc.text(p.descrizione || 'Rata ' + (i + 1), 35, y + 5.5);
+  doc.text('€ ' + fmt(p.importo || 0), W - 20, y + 5.5, {align: 'right'});
+  y += 8;
  });
- const pianificato=current.piano.reduce((a,p)=>a+(+p.importo||0),0);
- y+=4;
- doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(17,17,17);
- doc.text('Pianificato: € '+fmt(pianificato),15,y);
- doc.text('Non pianificato: € '+fmt(Math.max(0,t.tot-pianificato)),W-19,y,{align:'right'});
- y+=6;
- doc.setFontSize(11);doc.setTextColor(176,0,32);
- doc.text('SALDO RESIDUO: € '+fmt(t.saldo),15,y);
- y+=10;
- if(y>230){doc.addPage();y=20;}
- doc.setFont('times','bold');doc.setFontSize(13);doc.setTextColor(17,17,17);
- doc.text('Condizioni di pagamento',15,y);
- doc.setDrawColor(201,162,39);doc.setLineWidth(0.8);doc.line(15,y+2,70,y+2);
- y+=8;
- doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(60,60,60);
- const cond=[
+ 
+ y += 6;
+ const pianificato = current.piano.reduce((a, p) => a + (+p.importo || 0), 0);
+ 
+ // 4. Riepilogo Finali
+ doc.setFont('helvetica', 'bold');
+ doc.setFontSize(10);
+ doc.setTextColor(17, 17, 17);
+ doc.text('Pianificato: € ' + fmt(pianificato), 20, y);
+ doc.text('Da pianificare: € ' + fmt(Math.max(0, t.tot - pianificato)), W - 20, y, {align: 'right'});
+ y += 7;
+ 
+ doc.setFontSize(12);
+ doc.setTextColor(176, 0, 32); // Rosso per il saldo
+ doc.text('SALDO RESIDUO: € ' + fmt(t.saldo), 20, y);
+ y += 12;
+ 
+ // 5. Condizioni di Pagamento
+ if(y > 230) {
+  footerPDF(doc);
+  doc.addPage();
+  y = 20;
+ }
+ doc.setFont('times', 'bold');
+ doc.setFontSize(13);
+ doc.setTextColor(17, 17, 17);
+ doc.text('Condizioni di Pagamento', 15, y);
+ doc.setDrawColor(201, 162, 39);
+ doc.setLineWidth(0.8);
+ doc.line(15, y + 2, 65, y + 2);
+ y += 8;
+ 
+ doc.setFont('helvetica', 'normal');
+ doc.setFontSize(8.5);
+ doc.setTextColor(60, 60, 60);
+ const cond = [
   'La caparra versata conferma la prenotazione della data e non è rimborsabile.',
   'Il saldo deve essere regolato entro e non oltre la consegna del lavoro finito.',
   'Eventuali rate intermedie vanno concordate e annotate nel presente piano.',
-  studioIdent.note?('Note dello studio: '+studioIdent.note):''
+  studioIdent.note ? ('Note dello studio: ' + studioIdent.note) : ''
  ].filter(Boolean);
- cond.forEach(c=>{
-  const lines=doc.splitTextToSize('•  '+c,W-30);
-  if(y>265){doc.addPage();y=20;}
-  doc.text(lines,17,y);
-  y+=lines.length*4.2+2;
+ 
+ cond.forEach(c => {
+  const lines = doc.splitTextToSize('•  ' + c, W - 30);
+  if(y > 260) {
+   footerPDF(doc);
+   doc.addPage();
+   y = 20;
+  }
+  doc.text(lines, 20, y);
+  y += (lines.length * 4.5) + 2;
  });
- y=Math.max(y,240);
- doc.setDrawColor(120,120,120);doc.setLineWidth(0.3);
- doc.line(15,y,80,y);doc.line(W-80,y,W-15,y);
- y+=4;doc.setFontSize(8);doc.setTextColor(120,120,120);
- doc.text('Firma dello Studio',15,y);doc.text('Firma del Cliente',W-80,y);
+ 
+ // 6. Firme
+ y = Math.max(y, 240);
+ doc.setDrawColor(120, 120, 120);
+ doc.setLineWidth(0.3);
+ doc.line(15, y, 80, y);
+ doc.line(W - 80, y, W - 15, y);
+ y += 4;
+ doc.setFontSize(8);
+ doc.setTextColor(120, 120, 120);
+ doc.text('Firma dello Studio', 15, y);
+ doc.text('Firma del Cliente', W - 80, y);
+ 
+ // 7. Footer su tutte le pagine
  footerPDF(doc);
- doc.save('PIANO_PAGAMENTO_'+(current.numero||'bozza')+'.pdf');
+ 
+ doc.save('PIANO_PAGAMENTO_' + (current.numero || 'bozza') + '.pdf');
 }
 
 function ricevutaAcconto(idx){
