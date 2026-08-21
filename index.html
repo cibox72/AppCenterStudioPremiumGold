@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AppCenter Studio Premium Gold</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Georgia,'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.container{background:#fff;border-radius:20px;padding:40px;max-width:600px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+h1{text-align:center;color:#333;margin-bottom:10px;font-size:28px}
+.subtitle{text-align:center;color:#666;margin-bottom:30px;font-size:14px}
+.login-box{background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:25px}
+.login-box h2{font-size:18px;margin-bottom:15px;color:#333}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:12px;color:#666;margin-bottom:5px;font-weight:600}
+.form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px}
+.btn{width:100%;padding:12px;background:#333;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px}
+.btn:hover{background:#555}
+.apps{display:grid;gap:12px}
+.app-link{display:block;padding:18px;background:#f8f9fa;border:2px solid #e9ecef;border-radius:10px;text-decoration:none;color:#333;transition:all 0.3s}
+.app-link:hover{border-color:#667eea;background:#fff;transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+.app-link .num{display:inline-block;background:#667eea;color:#fff;width:28px;height:28px;border-radius:50%;text-align:center;line-height:28px;font-size:12px;font-weight:700;margin-right:10px}
+.app-link h3{display:inline;font-size:16px}
+.app-link p{font-size:12px;color:#666;margin-top:5px;margin-left:38px}
+.error{color:#e74c3c;font-size:13px;text-align:center;margin-top:10px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎨 AppCenter Studio Premium Gold</h1>
+  <p class="subtitle">Suite gestionale per studi fotografici</p>
+  
+  <div id="loginSection" class="login-box">
+    <h2>🔐 Accesso</h2>
+    <div class="form-group">
+      <label>Utente</label>
+      <input type="text" id="username" placeholder="admin">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn" onclick="login()">Entra</button>
+    <div id="errorMsg" class="error"></div>
+  </div>
+
+  <div id="appsSection" class="hidden">
+    <h2 style="margin-bottom:15px;color:#333;font-size:18px"> Applicazioni disponibili</h2>
+    <div class="apps">
+      <a href="preventivi-contratti/index.html" class="app-link">
+        <span class="num">01</span>
+        <h3>Preventivi & Contratti</h3>
+        <p>Crea preventivi, contratti, gestisci acconti e invia su WhatsApp</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">02</span>
+        <h3>Workflow</h3>
+        <p>Gestione del flusso di lavoro dello studio</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">03</span>
+        <h3>Clienti & Foto</h3>
+        <p>Anagrafica clienti e gestione foto</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">04</span>
+        <h3>Selezione per Album</h3>
+        <p>Selezione foto per la creazione album</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">05</span>
+        <h3>Gallery</h3>
+        <p>Gallery online per i clienti</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">06</span>
+        <h3>Negozio</h3>
+        <p>Vendita prodotti e servizi online</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">07</span>
+        <h3>Agenda</h3>
+        <p>Calendario appuntamenti e eventi</p>
+      </a>
+      <a href="#" class="app-link" onclick="alert('In sviluppo!')">
+        <span class="num">08</span>
+        <h3>Ricevute</h3>
+        <p>Emissione ricevute e gestione pagamenti</p>
+      </a>
+    </div>
+    <button class="btn" style="background:#e74c3c;margin-top:20px" onclick="logout()">Esci</button>
+  </div>
+</div>
+
+<script>
+function login(){
+  const u=document.getElementById('username').value;
+  const p=document.getElementById('password').value;
+  if(u==='admin' && p==='58879@Stella'){
+    sessionStorage.setItem('loggedIn','true');
+    showApps();
+  } else {
+    document.getElementById('errorMsg').textContent='Credenziali non valide';
+  }
+}
+function logout(){
+  sessionStorage.removeItem('loggedIn');
+  document.getElementById('loginSection').classList.remove('hidden');
+  document.getElementById('appsSection').classList.add('hidden');
+  document.getElementById('username').value='';
+  document.getElementById('password').value='';
+}
+function showApps(){
+  document.getElementById('loginSection').classList.add('hidden');
+  document.getElementById('appsSection').classList.remove('hidden');
+}
+if(sessionStorage.getItem('loggedIn')==='true'){
+  showApps();
+}
+</script>
+</body>
+</html>
