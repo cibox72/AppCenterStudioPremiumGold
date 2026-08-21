@@ -70,7 +70,7 @@ function openModal(cliente = null) {
         document.getElementById('note').value = cliente.note || '';
     } else {
         title.textContent = 'Nuovo Cliente';
-        form.reset();
+        document.getElementById('cliente-form').reset();
         document.getElementById('cliente-id').value = '';
     }
     
