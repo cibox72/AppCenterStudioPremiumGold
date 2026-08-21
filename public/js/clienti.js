@@ -66,7 +66,6 @@ function openModal(cliente = null) {
         document.getElementById('email').value = cliente.email || '';
         document.getElementById('telefono').value = cliente.telefono || '';
         document.getElementById('indirizzo').value = cliente.indirizzo || '';
-        document.getElementById('data-nascita').value = cliente.data_nascita || '';
         document.getElementById('note').value = cliente.note || '';
     } else {
         title.textContent = 'Nuovo Cliente';
@@ -93,7 +92,6 @@ async function saveCliente() {
         email: document.getElementById('email').value,
         telefono: document.getElementById('telefono').value,
         indirizzo: document.getElementById('indirizzo').value,
-        data_nascita: document.getElementById('data-nascita').value,
         note: document.getElementById('note').value
     };
 
