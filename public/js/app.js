@@ -1,5 +1,5 @@
 // =========================================================================
-// APPCENTER STUDIO PREMIUM GOLD - MAIN LOGIC v15 (R2 PRIVATE ENGINE)
+// APPCENTER STUDIO PREMIUM GOLD - MAIN ENGINE & ADMIN CONTROL v16
 // =========================================================================
 
 const API_URL = 'https://workers.dev';
@@ -7,6 +7,9 @@ const STUDIO_TOKEN = '58879@Stella';
 
 let currentUser = null;
 let currentStudio = null;
+
+let databaseStudiGlobali = [];
+let databaseOfferteGlobali = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     showSection('login');
@@ -17,6 +20,18 @@ function setupEventListeners() {
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
+    }
+
+    // Ascolto form inserimento studio Admin
+    const studioForm = document.getElementById('admin-studio-form');
+    if (studioForm) {
+        studioForm.addEventListener('submit', handleSalvaStudioAdmin);
+    }
+
+    // Ascolto form inserimento offerte Admin
+    const offertaForm = document.getElementById('admin-offerta-form');
+    if (offertaForm) {
+        offertaForm.addEventListener('submit', handleSalvaOffertaAdmin);
     }
 }
 
@@ -35,41 +50,45 @@ function showSection(sectionName) {
 
 function showStudioSection(sectionName) {
     const studioContent = document.getElementById('studio-content');
+    if (!studioContent) return;
     
     switch(sectionName) {
         case 'preventivi':
-            studioContent.innerHTML = '<h3>Preventivi</h3><p>Gestione preventivi in sviluppo...</p>';
+            studioContent.innerHTML = '<h3>Preventivi</h3><p>Gestione preventivi caricata...</p>';
+            if (typeof loadPreventivi === 'function') loadPreventivi();
             break;
         case 'clienti':
-            studioContent.innerHTML = '<h3>Clienti</h3><p>Gestione clienti in sviluppo...</p>';
+            studioContent.innerHTML = '<h3>Clienti</h3><p>Gestione clienti caricata...</p>';
+            if (typeof loadClienti === 'function') loadClienti();
+            break;
+        case 'workflow':
+            studioContent.innerHTML = '<h3>Workflow</h3><p>Gestione flusso di lavoro caricata...</p>';
+            if (typeof caricaWorkflowCloud === 'function') caricaWorkflowCloud();
             break;
         case 'foto':
-            studioContent.innerHTML = '<h3>Foto</h3><p>Gestione foto in sviluppo...</p>';
-            break;
-        case 'agenda':
-            studioContent.innerHTML = '<h3>Agenda</h3><p>Gestione agenda in sviluppo...</p>';
-            break;
-        case 'negozio':
-            studioContent.innerHTML = '<h3>Negozio</h3><p>Gestione negozio in sviluppo...</p>';
+            studioContent.innerHTML = '<h3>Galleria & Selezione Album</h3><p>Configurazione provini attiva...</p>';
             break;
         default:
-            studioContent.innerHTML = '<p>Seleziona una sezione</p>';
+            studioContent.innerHTML = '<p>Seleziona una sezione dal menu</p>';
     }
 }
 
+// 🔐 Login Unificato e Controllo Accessi
 async function handleLogin(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     
+    // 1. Ruolo: Fornitore Supremo (Admin)
     if (username === 'admin' && password === '58879@Stella') {
         currentUser = { type: 'admin', username: 'admin' };
         showSection('admin');
-        loadAdminStats(); 
+        await inizializzaPannelloFornitore();
         return;
     }
     
+    // 2. Ruolo: Studio Fotografico (Pescato da Cloudflare R2)
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
             method: 'GET',
@@ -83,8 +102,9 @@ async function handleLogin(e) {
         const studioTrovato = studi.find(s => s.email === username && s.password === password);
         
         if (studioTrovato) {
-            if (studioTrovato.attivo === 0) {
-                alert('❌ Questo studio è stato disattivato dall\'amministratore.');
+            // Controllo Interruttore Spegni/Accendi Link
+            if (parseInt(studioTrovato.attivo) === 0) {
+                alert('❌ Accesso Negato: Il link di questo studio fotografico è stato disattivato dal Fornitore per abbonamento scaduto o sospeso.');
                 return;
             }
             currentUser = { type: 'studio', ...studioTrovato };
@@ -99,134 +119,130 @@ async function handleLogin(e) {
         }
     } catch (error) {
         console.error('Errore login:', error);
-        alert('❌ Errore di connessione con il Cloud privato Cloudflare.');
+        alert('❌ Errore di connessione con il database Cloud R2.');
     }
 }
 
-async function loadAdminStats() {
+// =========================================================================
+// LOGICA LOGISTICA ADMIN / FORNITORE
+// =========================================================================
+
+async function inizializzaPannelloFornitore() {
+    await caricaOfferteAdmin();
+    await caricaStudiAdmin();
+}
+
+// Carica Offerte Commerciali
+async function caricaOfferteAdmin() {
     try {
-        const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
+        const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=offerte_commerciali`, {
             method: 'GET',
-            headers: { 
-                'Content-Type': 'application/json',
-                'X-Studio-Token': STUDIO_TOKEN
-            }
+            headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
-        const studi = await response.json();
+        databaseOfferteGlobali = await response.json();
+        if (!Array.isArray(databaseOfferteGlobali)) databaseOfferteGlobali = [];
         
-        if (Array.isArray(studi)) {
-            const studiAttivi = studi.filter(s => s.attivo === 1).length;
-            document.getElementById('studi-attivi').textContent = studiAttivi;
-        } else {
-            document.getElementById('studi-attivi').textContent = '0';
+        document.getElementById('offerte-totali').textContent = databaseOfferteGlobali.length;
+        
+        // Popola il menu a tendina nel form degli studi
+        const selectOfferta = document.getElementById('admin-studio-offerta');
+        if (selectOfferta) {
+            selectOfferta.innerHTML = '<option value="">Seleziona un\'Offerta</option>' + 
+                databaseOfferteGlobali.map(o => `<option value="${o.id}">${o.titolo} (${o.prezzo})</option>`).join('');
         }
-        document.getElementById('fatturato').textContent = '€0';
         
+        renderizzaListaOfferteAdmin();
     } catch (error) {
-        console.error('Errore statistiche admin:', error);
+        console.error(error);
     }
 }
 
-async function creaStudio() {
-    const nome = prompt('Nome dello studio:');
-    if (!nome) return;
+function renderizzaListaOfferteAdmin() {
+    const container = document.getElementById('offerte-list-container');
+    if (!container) return;
     
-    const email = prompt('Email di accesso:');
-    const telefono = prompt('Telefono:');
-    const indirizzo = prompt('Indirizzo studio:');
-    const password = prompt('Password iniziale studio:');
-    
-    if (!email || !password) {
-        alert('Email e password sono campi obbligatori per lo studio');
+    if (databaseOfferteGlobali.length === 0) {
+        container.innerHTML = '<p style="color:#95a5a6; font-size:0.9em; text-align:center;">Nessuna offerta creata. Usa il form sopra.</p>';
         return;
     }
     
+    container.innerHTML = databaseOfferteGlobali.map(o => `
+        <div style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong style="color: #ecf0f1; font-size:0.95em;">${o.titolo}</strong><br>
+                <span style="color: #2ecc71; font-size: 0.85em; font-weight: bold;">${o.prezzo}</span>
+            </div>
+            <div>
+                <button type="button" onclick="caricaModificaOfferta('${o.id}')" style="padding: 4px 8px; font-size: 11px; background: #3498db; border: none; border-radius: 4px;">Modifica</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function handleSalvaOffertaAdmin(e) {
+    e.preventDefault();
+    const idInput = document.getElementById('admin-offerta-id').value;
+    
+    const nuovaOfferta = {
+        id: idInput || 'OFF-' + Math.floor(100000 + Math.random() * 900000),
+        titolo: document.getElementById('admin-offerta-titolo').value.trim(),
+        prezzo: document.getElementById('admin-offerta-prezzo').value.trim(),
+        descrizione: document.getElementById('admin-offerta-descrizione').value.trim()
+    };
+    
+    if (idInput) {
+        const index = databaseOfferteGlobali.findIndex(o => o.id === idInput);
+        if (index !== -1) databaseOfferteGlobali[index] = nuovaOfferta;
+    } else {
+        databaseOfferteGlobali.push(nuovaOfferta);
+    }
+    
     try {
-        const loadRes = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
-            method: 'GET',
-            headers: { 'X-Studio-Token': STUDIO_TOKEN }
-        });
-        let studi = await loadRes.json();
-        if (!Array.isArray(studi)) studi = [];
-
-        const nuovoStudioId = 'STU-' + Math.floor(100000 + Math.random() * 900000);
-        
-        const nuovoStudio = {
-            studio_id: nuovoStudioId,
-            nome,
-            email,
-            telefono,
-            indirizzo,
-            password,
-            attivo: 1,
-            data_creazione: new Date().toISOString()
-        };
-
-        studi.push(nuovoStudio);
-
-        const saveRes = await fetch(`${API_URL}/api/db-save`, {
+        await fetch(`${API_URL}/api/db-save`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'X-Studio-Token': STUDIO_TOKEN
-            },
-            body: JSON.stringify({
-                studio_id: 'ADMIN_SYSTEM',
-                chiave: 'studi_registrati',
-                dati: studi
-            })
+            headers: { 'Content-Type': 'application/json', 'X-Studio-Token': STUDIO_TOKEN },
+            body: JSON.stringify({ studio_id: 'ADMIN_SYSTEM', chiave: 'offerte_commerciali', dati: databaseOfferteGlobali })
         });
-
-        const resData = await saveRes.json();
         
-        if (resData.success) {
-            alert(`✅ Studio creato con successo nel cloud R2!\n\nID: ${nuovoStudioId}\nEmail: ${email}\nPassword: ${password}`);
-            loadAdminStats();
-        } else {
-            alert('❌ Errore nel salvataggio dello studio.');
-        }
+        document.getElementById('admin-offerta-form').reset();
+        document.getElementById('admin-offerta-id').value = '';
+        document.getElementById('form-offerta-title').textContent = '🏷️ Gestione Offerte';
+        alert('✅ Lista Offerte Sincronizzata su Cloudflare R2!');
+        await caricaOfferteAdmin();
     } catch (error) {
-        alert('❌ Errore di connessione durante la creazione.');
+        alert('Errore nel salvataggio dell\'offerta.');
     }
 }
 
-async function visualizzaStudi() {
+function caricaModificaOfferta(id) {
+    const o = databaseOfferteGlobali.find(off => off.id === id);
+    if (!o) return;
+    document.getElementById('admin-offerta-id').value = o.id;
+    document.getElementById('admin-offerta-titolo').value = o.titolo;
+    document.getElementById('admin-offerta-prezzo').value = o.prezzo;
+    document.getElementById('admin-offerta-descrizione').value = o.descrizione || '';
+    document.getElementById('form-offerta-title').textContent = '📝 Modifica Offerta: ' + o.titolo;
+}
+
+// Carica Archivio Studi
+async function caricaStudiAdmin() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
             method: 'GET',
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
-        const studi = await response.json();
+        databaseStudiGlobali = await response.json();
+        if (!Array.isArray(databaseStudiGlobali)) databaseStudiGlobali = [];
         
-        const container = document.getElementById('studi-container');
-        if (Array.isArray(studi) && studi.length > 0) {
-            container.innerHTML = studi.map(studio => `
-                <div style="padding: 15px; border: 1px solid rgba(255,255,255,0.1); margin: 10px 0; border-radius: 8px; background: rgba(52, 73, 94, 0.4);">
-                    <strong style="color: #ecf0f1; font-size: 1.1em;">${studio.nome}</strong><br>
-                    <span style="color: #95a5a6; font-size: 0.9em;"> 📧 ${studio.email}</span><br>
-                    <span style="color: #95a5a6; font-size: 0.9em;"> 📞 ${studio.telefono || 'N/A'}</span><br>
-                    <span style="color: ${studio.attivo ? '#2ecc71' : '#e74c3c'}; font-size: 0.9em;">
-                        ${studio.attivo ? '✅ Studio Attivo' : '❌ Studio Disattivato'}
-                    </span><br>
-                    <span style="color: #7f8c8d; font-size: 0.85em;">📅 Creato: ${new Date(studio.data_creazione).toLocaleDateString()}</span>
-                </div>
-            `).join('');
-            
-            document.getElementById('studi-lista').classList.remove('hidden');
-        } else {
-            container.innerHTML = '<p style="color: #95a5a6; padding: 10px;">Nessuno studio presente nel database cloud.</p>';
-            document.getElementById('studi-lista').classList.remove('hidden');
-        }
+        document.getElementById('studi-attivi').textContent = databaseStudiGlobali.filter(s => parseInt(s.attivo) === 1).length;
+        renderizzaArchivioStudiAdmin();
     } catch (error) {
-        alert('❌ Errore di caricamento della lista degli studi.');
+        console.error(error);
     }
 }
 
-function logout() {
-    currentUser = null;
-    currentStudio = null;
-    localStorage.removeItem('current_studio_id');
-    localStorage.removeItem('studio_token');
-    showSection('login');
-    document.getElementById('login-form').reset();
-}
+function renderizzaArchivioStudiAdmin() {
+    const tbody = document.getElementById('studi-archivio-tbody');
+    if (!tbody) return;
+    
+    if (databaseStudiGlobali.length === 0) {
