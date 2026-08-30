@@ -3,9 +3,8 @@
 // =========================================================================
 
 // 🌐 Configurazione Nuova Infrastruttura Cloudflare Privata
-const API_URL = 'https://appcenter-api.mairaluigi-b2f.workers.dev';
-// 🔒 Inserisci qui dentro la password esatta che hai scritto su Cloudflare nel STUDIO_SECRET_TOKEN
-const STUDIO_TOKEN = 'INSERISCI_QUI_LA_TUA_PASSWORD_SEGRETA'; 
+const API_URL = 'https://workers.dev';
+const STUDIO_TOKEN = '58879@Stella'; 
 
 // Stato applicazione
 let currentUser = null;
