@@ -1,5 +1,11 @@
-// Configurazione
-const API_URL = 'https://appcenter-api.mairaluigi.workers.dev';
+// =========================================================================
+// APPCENTER STUDIO PREMIUM GOLD - MAIN LOGIC v15 (R2 PRIVATE ENGINE)
+// =========================================================================
+
+// 🌐 Configurazione Nuova Infrastruttura Cloudflare Privata
+const API_URL = 'https://appcenter-api.mairaluigi-b2f.workers.dev';
+// 🔒 Inserisci qui dentro la password esatta che hai scritto su Cloudflare nel STUDIO_SECRET_TOKEN
+const STUDIO_TOKEN = 'INSERISCI_QUI_LA_TUA_PASSWORD_SEGRETA'; 
 
 // Stato applicazione
 let currentUser = null;
@@ -19,15 +25,13 @@ function setupEventListeners() {
     }
 }
 
-// Navigazione
+// Navigazione sezioni principali
 function showSection(sectionName) {
-    // Nascondi tutte le sezioni
     document.querySelectorAll('section').forEach(section => {
         section.classList.remove('active');
         section.classList.add('hidden');
     });
     
-    // Mostra sezione selezionata
     const targetSection = document.getElementById(sectionName);
     if (targetSection) {
         targetSection.classList.remove('hidden');
@@ -59,113 +63,168 @@ function showStudioSection(sectionName) {
     }
 }
 
-// Login
+// 🔐 Login Protetto ed Autenticato
 async function handleLogin(e) {
     e.preventDefault();
     
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
     
-    // Login admin
+    // 1. Controllo Accesso Amministratore Supremo (Admin)
     if (username === 'admin' && password === '58879@Stella') {
         currentUser = { type: 'admin', username: 'admin' };
         showSection('admin');
-        loadAdminStats(); // Carica statistiche reali
+        loadAdminStats(); 
         return;
     }
     
-    // Login studio
+    // 2. Controllo Accesso Studio Fotografico (JSON CRUD su R2)
     try {
-        const response = await fetch(`${API_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+        const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Studio-Token': STUDIO_TOKEN
+            }
         });
         
-        const data = await response.json();
+        const studi = await response.json();
         
-        if (data.success) {
-            currentUser = { type: 'studio', ...data.studio };
+        // Cerca lo studio all'interno del file JSON del database
+        const studioTrovato = studi.find(s => s.email === username && s.password === password);
+        
+        if (studioTrovato) {
+            if (studioTrovato.attivo === 0) {
+                alert('❌ Questo studio è stato disattivato dall\'amministratore.');
+                return;
+            }
+            currentUser = { type: 'studio', ...studioTrovato };
+            currentStudio = studioTrovato.studio_id;
+            
+            // Salva la sessione locale per i moduli successivi
+            localStorage.setItem('current_studio_id', studioTrovato.studio_id);
+            localStorage.setItem('studio_token', STUDIO_TOKEN);
+            
             showSection('studio');
         } else {
-            alert('Credenziali non valide');
+            alert('❌ Credenziali dello studio non valide.');
         }
     } catch (error) {
         console.error('Errore login:', error);
-        alert('Errore di connessione');
+        alert('❌ Errore di connessione con il Cloud privato Cloudflare.');
     }
 }
 
-// Carica statistiche admin
+// Carica statistiche pannello Admin
 async function loadAdminStats() {
     try {
-        // Carica studi
-        const responseStudi = await fetch(`${API_URL}/api/studi`);
-        const dataStudi = await responseStudi.json();
+        const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Studio-Token': STUDIO_TOKEN
+            }
+        });
+        const studi = await response.json();
         
-        if (dataStudi.success) {
-            const studiAttivi = dataStudi.studi.filter(s => s.attivo === 1).length;
+        if (Array.isArray(studi)) {
+            const studiAttivi = studi.filter(s => s.attivo === 1).length;
             document.getElementById('studi-attivi').textContent = studiAttivi;
+        } else {
+            document.getElementById('studi-attivi').textContent = '0';
         }
-        
-        // Carica fatturato (da implementare)
         document.getElementById('fatturato').textContent = '€0';
         
     } catch (error) {
-        console.error('Errore caricamento stats:', error);
+        console.error('Errore statistiche admin:', error);
     }
 }
 
-// Crea studio
+// Azione Admin: Crea un Nuovo Studio Fotografico (Aggiunta a file JSON su R2)
 async function creaStudio() {
     const nome = prompt('Nome dello studio:');
     if (!nome) return;
     
-    const email = prompt('Email:');
+    const email = prompt('Email di accesso:');
     const telefono = prompt('Telefono:');
-    const indirizzo = prompt('Indirizzo:');
-    const password = prompt('Password iniziale:');
+    const indirizzo = prompt('Indirizzo studio:');
+    const password = prompt('Password iniziale studio:');
     
     if (!email || !password) {
-        alert('Email e password sono obbligatori');
+        alert('Email e password sono campi obbligatori per lo studio');
         return;
     }
     
     try {
-        const response = await fetch(`${API_URL}/api/studi`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, email, telefono, indirizzo, password })
+        // 1. Carica l'elenco attuale degli studi
+        const loadRes = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
+            method: 'GET',
+            headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
+        let studi = await loadRes.json();
+        if (!Array.isArray(studi)) studi = [];
+
+        // Genera un ID Studio univoco pulito (es: STU-1718292)
+        const nuovoStudioId = 'STU-' + Math.floor(100000 + Math.random() * 900000);
         
-        const data = await response.json();
+        const nuovoStudio = {
+            studio_id: nuovoStudioId,
+            nome,
+            email,
+            telefono,
+            indirizzo,
+            password,
+            attivo: 1,
+            data_creazione: new Date().toISOString()
+        };
+
+        studi.push(nuovoStudio);
+
+        // 2. Salva l'elenco aggiornato su Cloudflare R2
+        const saveRes = await fetch(`${API_URL}/api/db-save`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Studio-Token': STUDIO_TOKEN
+            },
+            body: JSON.stringify({
+                studio_id: 'ADMIN_SYSTEM',
+                chiave: 'studi_registrati',
+                dati: studi
+            })
+        });
+
+        const resData = await saveRes.json();
         
-        if (data.success) {
-            alert(`✅ Studio creato con successo!\n\nID: ${data.studio_id}\nEmail: ${email}\nPassword: ${password}`);
-            loadAdminStats(); // Ricarica statistiche
+        if (resData.success) {
+            alert(`✅ Studio creato con successo nel cloud R2!\n\nID: ${nuovoStudioId}\nEmail: ${email}\nPassword: ${password}`);
+            loadAdminStats();
         } else {
-            alert('❌ Errore: ' + (data.message || 'Impossibile creare lo studio'));
+            alert('❌ Errore nel salvataggio dello studio.');
         }
     } catch (error) {
-        alert(' Errore di connessione');
+        alert('❌ Errore di connessione durante la creazione.');
     }
 }
 
-// Visualizza studi
+// Azione Admin: Visualizza la lista completa degli studi
 async function visualizzaStudi() {
     try {
-        const response = await fetch(`${API_URL}/api/studi`);
-        const data = await response.json();
+        const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
+            method: 'GET',
+            headers: { 'X-Studio-Token': STUDIO_TOKEN }
+        });
+        const studi = await response.json();
         
-        if (data.success && data.studi.length > 0) {
-            const container = document.getElementById('studi-container');
-            container.innerHTML = data.studi.map(studio => `
+        const container = document.getElementById('studi-container');
+        if (Array.isArray(studi) && studi.length > 0) {
+            container.innerHTML = studi.map(studio => `
                 <div style="padding: 15px; border: 1px solid rgba(255,255,255,0.1); margin: 10px 0; border-radius: 8px; background: rgba(52, 73, 94, 0.4);">
                     <strong style="color: #ecf0f1; font-size: 1.1em;">${studio.nome}</strong><br>
-                    <span style="color: #95a5a6; font-size: 0.9em;"> ${studio.email}</span><br>
-                    <span style="color: #95a5a6; font-size: 0.9em;"> ${studio.telefono || 'N/A'}</span><br>
+                    <span style="color: #95a5a6; font-size: 0.9em;"> 📧 ${studio.email}</span><br>
+                    <span style="color: #95a5a6; font-size: 0.9em;"> 📞 ${studio.telefono || 'N/A'}</span><br>
                     <span style="color: ${studio.attivo ? '#2ecc71' : '#e74c3c'}; font-size: 0.9em;">
-                        ${studio.attivo ? '✅ Attivo' : '❌ Disattivo'}
+                        ${studio.attivo ? '✅ Studio Attivo' : '❌ Studio Disattivato'}
                     </span><br>
                     <span style="color: #7f8c8d; font-size: 0.85em;">📅 Creato: ${new Date(studio.data_creazione).toLocaleDateString()}</span>
                 </div>
@@ -173,19 +232,22 @@ async function visualizzaStudi() {
             
             document.getElementById('studi-lista').classList.remove('hidden');
         } else {
-            alert('Nessuno studio trovato');
+            container.innerHTML = '<p style="color: #95a5a6; padding: 10px;">Nessuno studio presente nel database cloud.</p>';
+            document.getElementById('studi-lista').classList.remove('hidden');
         }
     } catch (error) {
-        alert('❌ Errore di connessione');
+        alert('❌ Errore di caricamento della lista degli studi.');
     }
 }
 
-// Utility
+// Utility Logout
 function logout() {
     currentUser = null;
     currentStudio = null;
+    localStorage.removeItem('current_studio_id');
+    localStorage.removeItem('studio_token');
     showSection('login');
     document.getElementById('login-form').reset();
 }
 
-console.log('AppCenter Studio Premium Gold caricato!');
+console.log('AppCenter Studio Premium Gold - Sistema Privato R2 Attivo!');
