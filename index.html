@@ -15,7 +15,7 @@
         </header>
 
         <!-- ========================================================================= -->
-        <!-- 🔐 SEZIONE LOGIN INITIALE (ACCESSO UNICO)                                  -->
+        <!-- 🔐 SEZIONE LOGIN INIZIALE (ACCESSO UNICO)                                  -->
         <!-- ========================================================================= -->
         <section id="login" class="active">
             <h2 style="text-align: center; color: #ecf0f1; margin-bottom: 20px; font-weight: 400;">🔐 Accesso al Sistema</h2>
@@ -39,7 +39,6 @@
                 <button onclick="showStudioSection('foto')">04/05 Album & Gallery</button>
             </div>
 
-            <!-- Contenitore dinamico dove verranno caricate le schede dei vari moduli -->
             <div id="studio-content">
                 <div class="empty-state" style="text-align: center; padding: 40px 20px;">
                     <h3 style="color: #ecf0f1; font-weight: 400; margin-bottom: 10px;">Benvenuto nel tuo Studio</h3>
@@ -53,45 +52,87 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- 👑 NUOVO PANNELLO AMMINISTRATORE SUPREMO (IL TUO PANNELLO FORNITORE)      -->
+        <!-- 👑 PANNELLO FORNITORE / AMMINISTRATORE (LA TUA CENTRALE SaaS)             -->
         <!-- ========================================================================= -->
         <section id="admin" class="hidden">
-            <h2 style="color: #ecf0f1; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 20px; font-weight: 400;">👑 Pannello Amministratore Fornitore</h2>
+            <h2 style="color: #ecf0f1; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 20px; font-weight: 400;">👑 Centrale di Controllo Fornitore Supremo</h2>
             
+            <!-- Contatori globali -->
             <div class="stats" style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
-                <div class="stat-card" style="flex: 1; min-width: 200px; padding: 25px; background: linear-gradient(135deg, rgba(52, 73, 94, 0.8) 0%, rgba(44, 62, 80, 0.9) 100%); border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15);">
-                    <h3 style="font-size: 1.1em; color: #bdc3c7; font-weight: 300; margin-bottom: 10px;">Studi Attivi nel Cloud</h3>
-                    <p id="studi-attivi" style="font-size: 2.5em; color: #2ecc71; margin: 0; font-weight: 300;">0</p>
+                <div class="stat-card" style="flex: 1; min-width: 200px; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15);">
+                    <h3 style="font-size: 1.1em; color: #bdc3c7; font-weight: 300; margin-bottom: 5px;">Studi Attivi nel Cloud</h3>
+                    <p id="studi-attivi" style="font-size: 2.5em; color: #2ecc71; margin: 0; font-weight: bold;">0</p>
                 </div>
-                <div class="stat-card" style="flex: 1; min-width: 200px; padding: 25px; background: linear-gradient(135deg, rgba(52, 73, 94, 0.8) 0%, rgba(44, 62, 80, 0.9) 100%); border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15);">
-                    <h3 style="font-size: 1.1em; color: #bdc3c7; font-weight: 300; margin-bottom: 10px;">Fatturato Globale</h3>
-                    <p id="fatturato" style="font-size: 2.5em; color: #ecf0f1; margin: 0; font-weight: 300;">€0</p>
+                <div class="stat-card" style="flex: 1; min-width: 200px; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15);">
+                    <h3 style="font-size: 1.1em; color: #bdc3c7; font-weight: 300; margin-bottom: 5px;">Offerte Configurate</h3>
+                    <p id="offerte-totali" style="font-size: 2.5em; color: #3498db; margin: 0; font-weight: bold;">0</p>
                 </div>
             </div>
-            
-            <div class="actions" style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <h3 style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">Gestione Piattaforma Gold</h3>
-                <button class="btn btn-primary" onclick="creaStudio()" style="margin: 5px;">➕ Crea Nuovo Studio Fotografico</button>
-                <button class="btn btn-secondary" onclick="visualizzaStudi()" style="margin: 5px;">👁️ Visualizza Tutti gli Studi</button>
-            </div>
-            
-            <div id="studi-lista" class="hidden" style="margin-top: 20px; background: rgba(52, 73, 94, 0.2); padding: 15px; border-radius: 8px;">
-                <h3 style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">Elenco Studi Registrati su Cloudflare R2</h3>
-                <div id="studi-container"></div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <button class="btn btn-danger" onclick="logout()">🚪 Esci dall'Amministrazione</button>
-            </div>
-        </section>
 
-    </div>
+            <!-- Due Colonne Operative: Sinistra=Crea Studio & Offerte, Destra=Archivio -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                
+                <!-- BLOCCO DI INSERIMENTO / MODIFICA STUDIO -->
+                <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3 id="form-studio-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">➕ Configura Nuovo Studio</h3>
+                    <form id="admin-studio-form" style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="hidden" id="admin-studio-id">
+                        
+                        <label style="color:#bdc3c7; font-size:0.85em;">Dati di Base</label>
+                        <input type="text" id="admin-studio-nome" placeholder="Nome Studio Fotografico" required>
+                        <input type="text" id="admin-studio-referente" placeholder="Nome Referente / Titolare" required>
+                        <input type="text" id="admin-studio-telefono" placeholder="Telefono Studio" required>
+                        
+                        <label style="color:#bdc3c7; font-size:0.85em; margin-top:5px;">Credenziali di Accesso dello Studio (Editabili)</label>
+                        <input type="email" id="admin-studio-email" placeholder="Username (Email dello Studio)" required>
+                        <input type="text" id="admin-studio-password" placeholder="Password dello Studio" required>
+                        
+                        <label style="color:#bdc3c7; font-size:0.85em; margin-top:5px;">Abbonamento & Offerta</label>
+                        <select id="admin-studio-offerta" style="padding: 12px; border-radius: 8px; background: rgba(52, 73, 94, 0.6); color: #ecf0f1; border: 1px solid rgba(255,255,255,0.2);">
+                            <option value="">Seleziona un'Offerta</option>
+                        </select>
+                        <select id="admin-studio-stato" style="padding: 12px; border-radius: 8px; background: rgba(52, 73, 94, 0.6); color: #ecf0f1; border: 1px solid rgba(255,255,255,0.2);">
+                            <option value="1">✅ Abbonamento Attivo</option>
+                            <option value="0">❌ Abbonamento Sospeso</option>
+                        </select>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button type="submit" style="flex: 1; background: #2ecc71;">Salva Studio</button>
+                            <button type="button" onclick="annullaModificaStudio()" style="background: #7f8c8d;">Annulla</button>
+                        </div>
+                    </form>
+                </div>
 
-    <!-- Caricamento dei file script della logica privati -->
-    <script src="public/js/app.js"></script>
-    <script src="public/js/clienti.js"></script>
-    <script src="public/js/preventivi.js"></script>
-    <script src="public/js/workflow.js"></script>
-    <script src="public/js/foto.js"></script>
-</body>
-</html>
+                <!-- BLOCCO GESTIONE OFFERTE COMMERCIALI -->
+                <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3 id="form-offerta-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">🏷️ Gestione Offerte</h3>
+                    <form id="admin-offerta-form" style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                        <input type="hidden" id="admin-offerta-id">
+                        <input type="text" id="admin-offerta-titolo" placeholder="Nome Offerta (es: Abbonamento Annuale Gold)" required>
+                        <input type="text" id="admin-offerta-prezzo" placeholder="Prezzo Offerta (es: €299/anno)" required>
+                        <input type="text" id="admin-offerta-descrizione" placeholder="Cosa include (es: Spazio R2 Illimitato, GRU inclusa)">
+                        <button type="submit" style="background: #3498db;">🏷️ Aggiungi / Modifica Offerta</button>
+                    </form>
+                    
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; max-height: 200px; overflow-y: auto;" id="offerte-list-container">
+                        <!-- Elenco offerte renderizzato da JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ARCHIVIO GLOBALE DEGLI STUDI REGISTRATI -->
+            <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h3 style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">📁 Archivio Piattaforma & Controllo Link Studi</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; color: #ecf0f1;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(255,255,255,0.15); color: #bdc3c7; font-size: 0.9em;">
+                                <th style="padding: 10px;">ID / Studio</th>
+                                <th style="padding: 10px;">Referente / Telefono</th>
+                                <th style="padding: 10px;">Credenziali</th>
+                                <th style="padding: 10px;">Offerta</th>
+                                <th style="padding: 10px; text-align: center;">Abbonamento</th>
+                                <th style="padding: 10px; text-align: right;">Azioni Operative</th>
+                            </tr>
+                        </thead>
