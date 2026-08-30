@@ -2,30 +2,24 @@
 // APPCENTER STUDIO PREMIUM GOLD - MAIN LOGIC v15 (R2 PRIVATE ENGINE)
 // =========================================================================
 
-// 🌐 Configurazione Nuova Infrastruttura Cloudflare Privata
 const API_URL = 'https://workers.dev';
-
 const STUDIO_TOKEN = '58879@Stella'; 
 
-// Stato applicazione
 let currentUser = null;
 let currentStudio = null;
 
-// Inizializzazione
 document.addEventListener('DOMContentLoaded', () => {
     showSection('login');
     setupEventListeners();
 });
 
 function setupEventListeners() {
-    // Login form
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
 }
 
-// Navigazione sezioni principali
 function showSection(sectionName) {
     document.querySelectorAll('section').forEach(section => {
         section.classList.remove('active');
@@ -63,14 +57,12 @@ function showStudioSection(sectionName) {
     }
 }
 
-// 🔐 Login Protetto ed Autenticato
 async function handleLogin(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     
-    // 1. Controllo Accesso Amministratore Supremo (Admin)
     if (username === 'admin' && password === '58879@Stella') {
         currentUser = { type: 'admin', username: 'admin' };
         showSection('admin');
@@ -78,7 +70,6 @@ async function handleLogin(e) {
         return;
     }
     
-    // 2. Controllo Accesso Studio Fotografico (JSON CRUD su R2)
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
             method: 'GET',
@@ -89,8 +80,6 @@ async function handleLogin(e) {
         });
         
         const studi = await response.json();
-        
-        // Cerca lo studio all'interno del file JSON del database
         const studioTrovato = studi.find(s => s.email === username && s.password === password);
         
         if (studioTrovato) {
@@ -101,7 +90,6 @@ async function handleLogin(e) {
             currentUser = { type: 'studio', ...studioTrovato };
             currentStudio = studioTrovato.studio_id;
             
-            // Salva la sessione locale per i moduli successivi
             localStorage.setItem('current_studio_id', studioTrovato.studio_id);
             localStorage.setItem('studio_token', STUDIO_TOKEN);
             
@@ -115,7 +103,6 @@ async function handleLogin(e) {
     }
 }
 
-// Carica statistiche pannello Admin
 async function loadAdminStats() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
@@ -140,7 +127,6 @@ async function loadAdminStats() {
     }
 }
 
-// Azione Admin: Crea un Nuovo Studio Fotografico (Aggiunta a file JSON su R2)
 async function creaStudio() {
     const nome = prompt('Nome dello studio:');
     if (!nome) return;
@@ -156,7 +142,6 @@ async function creaStudio() {
     }
     
     try {
-        // 1. Carica l'elenco attuale degli studi
         const loadRes = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
             method: 'GET',
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
@@ -164,7 +149,6 @@ async function creaStudio() {
         let studi = await loadRes.json();
         if (!Array.isArray(studi)) studi = [];
 
-        // Genera un ID Studio univoco pulito (es: STU-1718292)
         const nuovoStudioId = 'STU-' + Math.floor(100000 + Math.random() * 900000);
         
         const nuovoStudio = {
@@ -180,7 +164,6 @@ async function creaStudio() {
 
         studi.push(nuovoStudio);
 
-        // 2. Salva l'elenco aggiornato su Cloudflare R2
         const saveRes = await fetch(`${API_URL}/api/db-save`, {
             method: 'POST',
             headers: { 
@@ -207,7 +190,6 @@ async function creaStudio() {
     }
 }
 
-// Azione Admin: Visualizza la lista completa degli studi
 async function visualizzaStudi() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
@@ -240,7 +222,6 @@ async function visualizzaStudi() {
     }
 }
 
-// Utility Logout
 function logout() {
     currentUser = null;
     currentStudio = null;
@@ -249,5 +230,3 @@ function logout() {
     showSection('login');
     document.getElementById('login-form').reset();
 }
-
-console.log('AppCenter Studio Premium Gold - Sistema Privato R2 Attivo!');
