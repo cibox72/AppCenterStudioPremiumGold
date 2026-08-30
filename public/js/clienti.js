@@ -2,18 +2,18 @@
 // APPCENTER STUDIO PREMIUM GOLD - MODULO 02 GESTIONE CLIENTI v15 (R2 CRUD)
 // =========================================================================
 
-// 🌐 Recupero Configurazione e Sessione Privata dal Login principale
+// 🌐 Configurazione Nuova Infrastruttura Cloudflare Privata
 const API_URL = 'https://workers.dev';
 const STUDIO_ID = localStorage.getItem('current_studio_id') || 'STU-001'; 
 const STUDIO_TOKEN = localStorage.getItem('studio_token') || '58879@Stella';
 
-// Inizializzazione modulo
+// Inizializzazione
 document.addEventListener('DOMContentLoaded', () => {
     loadClienti();
     setupForm();
 });
 
-// 🔄 READ: Carica la lista completa dei clienti dallo storage JSON su R2
+// Carica lista clienti
 async function loadClienti() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -23,13 +23,13 @@ async function loadClienti() {
                 'X-Studio-Token': STUDIO_TOKEN
             }
         });
-        const clienti = await response.json();
+        const data = await response.json();
 
         const listContainer = document.getElementById('clienti-list');
-        if (!listContainer) return;
 
-        if (Array.isArray(clienti) && clienti.length > 0) {
-            listContainer.innerHTML = clienti.map(cliente => `
+        // Nel nuovo sistema il caricamento restituisce direttamente l'array o l'errore
+        if (Array.isArray(data) && data.length > 0) {
+            listContainer.innerHTML = data.map(cliente => `
                 <div class="cliente-card">
                     <div class="cliente-info">
                         <h3>${cliente.nome} ${cliente.cognome}</h3>
@@ -45,18 +45,18 @@ async function loadClienti() {
         } else {
             listContainer.innerHTML = `
                 <div class="empty-state">
-                    <h3>Nessun cliente trovato nel Cloud</h3>
+                    <h3>Nessun cliente trovato</h3>
                     <p>Clicca "Nuovo Cliente" per aggiungere il primo cliente</p>
                 </div>
             `;
         }
     } catch (error) {
         console.error('Errore caricamento clienti:', error);
-        alert('❌ Errore di sincronizzazione con lo Storage Privato.');
+        alert('Errore di connessione');
     }
 }
 
-// Setup ascolto modulo di inserimento
+// Setup form
 function setupForm() {
     const form = document.getElementById('cliente-form');
     if (form) {
@@ -67,11 +67,10 @@ function setupForm() {
     }
 }
 
-// Gestione visiva Modal (Invariata per le tue schede)
+// Apri modal
 function openModal(cliente = null) {
     const modal = document.getElementById('cliente-modal');
     const title = document.getElementById('modal-title');
-    if (!modal) return;
     
     if (cliente) {
         title.textContent = 'Modifica Cliente';
@@ -92,15 +91,17 @@ function openModal(cliente = null) {
     modal.classList.add('active');
 }
 
+// Chiudi modal
 function closeModal() {
     const modal = document.getElementById('cliente-modal');
     if (modal) modal.classList.remove('active');
 }
 
-// 💾 CREATE & UPDATE: Salva o Aggiorna il cliente riscrivendo il file JSON
+// Salva cliente
 async function saveCliente() {
     const clienteIdInput = document.getElementById('cliente-id').value;
     
+    // 1. Carichiamo la lista attuale dal database Cloud R2 per aggiornarla
     let clienti = [];
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -115,13 +116,13 @@ async function saveCliente() {
 
     const campiCliente = {
         id: clienteIdInput || 'CLI-' + Math.floor(100000 + Math.random() * 900000),
-        nome: document.getElementById('nome').value.trim(),
-        cognome: document.getElementById('cognome').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        telefono: document.getElementById('telefono').value.trim(),
-        indirizzo: document.getElementById('indirizzo').value.trim(),
-        note: document.getElementById('note').value.trim(),
-        updated_at: new Date().toISOString()
+        studio_id: STUDIO_ID,
+        nome: document.getElementById('nome').value,
+        cognome: document.getElementById('cognome').value,
+        email: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value,
+        indirizzo: document.getElementById('indirizzo').value,
+        note: document.getElementById('note').value
     };
 
     if (clienteIdInput) {
@@ -133,6 +134,7 @@ async function saveCliente() {
         clienti.push(campiCliente);
     }
 
+    // 2. Salviamo l'intero array aggiornato su R2
     try {
         const response = await fetch(`${API_URL}/api/db-save`, {
             method: 'POST',
@@ -150,19 +152,19 @@ async function saveCliente() {
         const result = await response.json();
 
         if (result.success) {
-            alert(clienteIdInput ? '✅ Record Cliente aggiornato nel Cloud!' : '✅ Nuovo Cliente salvato con successo!');
+            alert(clienteIdInput ? 'Cliente aggiornato!' : 'Cliente creato!');
             closeModal();
             loadClienti();
         } else {
-            alert('❌ Errore nel salvataggio del file: ' + (result.message || 'Rifiutato dal server'));
+            alert('Errore: ' + (result.message || 'Operazione fallita'));
         }
     } catch (error) {
         console.error('Errore salvataggio:', error);
-        alert('❌ Impossibile stabilire la connessione sicura.');
+        alert('Errore di connessione');
     }
 }
 
-// 🔍 Carica i dati del singolo cliente nel modal per permettere la modifica
+// Modifica cliente
 async function editCliente(clienteId) {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -176,17 +178,17 @@ async function editCliente(clienteId) {
         if (cliente) {
             openModal(cliente);
         } else {
-            alert('❌ Cliente non trovato nel database Cloud.');
+            alert('Errore nel caricamento del cliente');
         }
     } catch (error) {
-        console.error('Errore modifica:', error);
-        alert('❌ Errore durante il recupero della scheda.');
+        console.error('Errore:', error);
+        alert('Errore di connessione');
     }
 }
 
-// 🗑️ DELETE: Rimuove un cliente dalla lista e aggiorna lo storage cloud
+// Elimina cliente
 async function deleteCliente(clienteId) {
-    if (!confirm('⚠️ Vuoi davvero eliminare questa scheda cliente? L\'azione aggiornerà il database privato.')) {
+    if (!confirm('Sei sicuro di voler eliminare questo cliente?')) {
         return;
     }
 
@@ -196,6 +198,7 @@ async function deleteCliente(clienteId) {
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
         let clienti = await response.json();
+        if (!Array.isArray(clienti)) clienti = [];
         
         clienti = clienti.filter(c => c.id !== clienteId);
 
@@ -215,13 +218,13 @@ async function deleteCliente(clienteId) {
         const result = await saveResponse.json();
 
         if (result.success) {
-            alert('🗑️ Scheda cliente eliminata definitivamente dal Cloud!');
+            alert('Cliente eliminato!');
             loadClienti();
         } else {
-            alert('❌ Impossibile aggiornare la lista dopo l\'eliminazione.');
+            alert('Errore nell\'eliminazione');
         }
     } catch (error) {
-        console.error('Errore eliminazione:', error);
-        alert('❌ Errore di rete durante la rimozione.');
+        console.error('Errore:', error);
+        alert('Errore di connessione');
     }
 }
