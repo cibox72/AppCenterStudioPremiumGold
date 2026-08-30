@@ -3,7 +3,7 @@
 // =========================================================================
 
 // 🌐 Recupero Configurazione e Sessione Privata dal Login principale
-const API_URL = 'https://appcenter-api.mairaluigi-b2f.workers.dev';
+const API_URL = 'https://workers.dev';
 const STUDIO_ID = localStorage.getItem('current_studio_id') || 'STU-001'; 
 const STUDIO_TOKEN = localStorage.getItem('studio_token') || '58879@Stella';
 
@@ -101,7 +101,6 @@ function closeModal() {
 async function saveCliente() {
     const clienteIdInput = document.getElementById('cliente-id').value;
     
-    // 1. Scarica la lista attuale dei clienti dal Cloud per aggiornarla
     let clienti = [];
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -126,17 +125,14 @@ async function saveCliente() {
     };
 
     if (clienteIdInput) {
-        // Modalità Modifica: Sostituisci il vecchio record corrispondente
         const index = clienti.findIndex(c => c.id === clienteIdInput);
         if (index !== -1) {
             clienti[index] = campiCliente;
         }
     } else {
-        // Modalità Nuovo Inserimento: Aggiungi in coda all'array
         clienti.push(campiCliente);
     }
 
-    // 2. Invia l'intero array aggiornato a Cloudflare R2
     try {
         const response = await fetch(`${API_URL}/api/db-save`, {
             method: 'POST',
@@ -195,17 +191,14 @@ async function deleteCliente(clienteId) {
     }
 
     try {
-        // 1. Carica l'elenco attuale
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
             method: 'GET',
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
         let clienti = await response.json();
         
-        // Filtra escludendo il cliente rimosso
         clienti = clienti.filter(c => c.id !== clienteId);
 
-        // 2. Risalva l'elenco ripulito su R2
         const saveResponse = await fetch(`${API_URL}/api/db-save`, {
             method: 'POST',
             headers: { 
