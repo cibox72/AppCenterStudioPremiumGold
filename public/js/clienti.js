@@ -2,19 +2,15 @@
 // APPCENTER STUDIO PREMIUM GOLD - MODULO 02 GESTIONE CLIENTI v15 (R2 CRUD)
 // =========================================================================
 
-// 🌐 Configurazione Nuova Infrastruttura Cloudflare Privata
 const API_URL = 'https://workers.dev';
-
 const STUDIO_ID = localStorage.getItem('current_studio_id') || 'STU-001'; 
 const STUDIO_TOKEN = localStorage.getItem('studio_token') || '58879@Stella';
 
-// Inizializzazione
 document.addEventListener('DOMContentLoaded', () => {
     loadClienti();
     setupForm();
 });
 
-// Carica lista clienti
 async function loadClienti() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -25,10 +21,8 @@ async function loadClienti() {
             }
         });
         const data = await response.json();
-
         const listContainer = document.getElementById('clienti-list');
 
-        // Nel nuovo sistema il caricamento restituisce direttamente l'array o l'errore
         if (Array.isArray(data) && data.length > 0) {
             listContainer.innerHTML = data.map(cliente => `
                 <div class="cliente-card">
@@ -57,7 +51,6 @@ async function loadClienti() {
     }
 }
 
-// Setup form
 function setupForm() {
     const form = document.getElementById('cliente-form');
     if (form) {
@@ -68,7 +61,6 @@ function setupForm() {
     }
 }
 
-// Apri modal
 function openModal(cliente = null) {
     const modal = document.getElementById('cliente-modal');
     const title = document.getElementById('modal-title');
@@ -88,21 +80,16 @@ function openModal(cliente = null) {
         if (form) form.reset();
         document.getElementById('cliente-id').value = '';
     }
-    
     modal.classList.add('active');
 }
 
-// Chiudi modal
 function closeModal() {
     const modal = document.getElementById('cliente-modal');
     if (modal) modal.classList.remove('active');
 }
 
-// Salva cliente
 async function saveCliente() {
     const clienteIdInput = document.getElementById('cliente-id').value;
-    
-    // 1. Carichiamo la lista attuale dal database Cloud R2 per aggiornarla
     let clienti = [];
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -128,14 +115,11 @@ async function saveCliente() {
 
     if (clienteIdInput) {
         const index = clienti.findIndex(c => c.id === clienteIdInput);
-        if (index !== -1) {
-            clienti[index] = campiCliente;
-        }
+        if (index !== -1) clienti[index] = campiCliente;
     } else {
         clienti.push(campiCliente);
     }
 
-    // 2. Salviamo l'intero array aggiornato su R2
     try {
         const response = await fetch(`${API_URL}/api/db-save`, {
             method: 'POST',
@@ -143,15 +127,10 @@ async function saveCliente() {
                 'Content-Type': 'application/json',
                 'X-Studio-Token': STUDIO_TOKEN
             },
-            body: JSON.stringify({
-                studio_id: STUDIO_ID,
-                chiave: 'clienti',
-                dati: clienti
-            })
+            body: JSON.stringify({ studio_id: STUDIO_ID, chiave: 'clienti', dati: clienti })
         });
 
         const result = await response.json();
-
         if (result.success) {
             alert(clienteIdInput ? 'Cliente aggiornato!' : 'Cliente creato!');
             closeModal();
@@ -165,7 +144,6 @@ async function saveCliente() {
     }
 }
 
-// Modifica cliente
 async function editCliente(clienteId) {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -173,7 +151,6 @@ async function editCliente(clienteId) {
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
         const clienti = await response.json();
-        
         const cliente = clienti.find(c => c.id === clienteId);
 
         if (cliente) {
@@ -187,11 +164,8 @@ async function editCliente(clienteId) {
     }
 }
 
-// Elimina cliente
 async function deleteCliente(clienteId) {
-    if (!confirm('Sei sicuro di voler eliminare questo cliente?')) {
-        return;
-    }
+    if (!confirm('Sei sicuro di voler eliminare questo cliente?')) return;
 
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=${STUDIO_ID}&chiave=clienti`, {
@@ -209,15 +183,10 @@ async function deleteCliente(clienteId) {
                 'Content-Type': 'application/json',
                 'X-Studio-Token': STUDIO_TOKEN
             },
-            body: JSON.stringify({
-                studio_id: STUDIO_ID,
-                chiave: 'clienti',
-                dati: clienti
-            })
+            body: JSON.stringify({ studio_id: STUDIO_ID, chiave: 'clienti', dati: clienti })
         });
 
         const result = await saveResponse.json();
-
         if (result.success) {
             alert('Cliente eliminato!');
             loadClienti();
