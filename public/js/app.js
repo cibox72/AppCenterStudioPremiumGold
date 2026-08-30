@@ -4,6 +4,7 @@
 
 // 🌐 Configurazione Nuova Infrastruttura Cloudflare Privata
 const API_URL = 'https://workers.dev';
+
 const STUDIO_TOKEN = '58879@Stella'; 
 
 // Stato applicazione
