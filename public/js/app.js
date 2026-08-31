@@ -1,5 +1,5 @@
 // =========================================================================
-// APPCENTER STUDIO PREMIUM GOLD - MAIN ENGINE & ADMIN CONTROL v16.4 (PRO)
+// APPCENTER STUDIO PREMIUM GOLD - MAIN ENGINE & ADMIN CONTROL v16.5 (PRO)
 // =========================================================================
 
 const API_URL = 'https://workers.dev';
@@ -11,35 +11,17 @@ let currentStudio = null;
 let databaseStudiGlobali = [];
 let databaseOfferteGlobali = [];
 
-// Inizializzazione pulita
 document.addEventListener('DOMContentLoaded', () => {
     showSection('login');
-    setupEventListeners();
 });
 
-function setupEventListeners() {
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            eseguiLoginProcesso();
-        });
-    }
-}
-
-// Funzione legata direttamente al clic sul pulsante onclick nell'HTML
+// 🔐 FUNZIONE DI INGRESSO UNIVERSALE LEGATA DIRETTAMENTE AL PULSANTE
 async function handleLoginManuale() {
-    await eseguiLoginProcesso();
-}
-
-// 🔐 BLOCCO LOGIN ATOMICO ED INFALLIBILE
-async function eseguiLoginProcesso() {
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     
     if (!usernameInput || !passwordInput) {
-        alert("Errore: Campi d'interfaccia non rilevati.");
+        alert("Errore d'interfaccia: controlla i file html.");
         return;
     }
     
@@ -47,13 +29,12 @@ async function eseguiLoginProcesso() {
     const password = passwordInput.value.trim();
     
     if (!username || !password) {
-        alert("⚠️ Inserisci sia l'utente che la password.");
+        alert("⚠️ Per favore, inserisci utente e password.");
         return;
     }
     
     // 👑 1. Controllo Immediato ed Isolato Ruolo Fornitore Supremo (Admin)
     if (username === 'admin' && password === '58879@Stella') {
-        console.log("Accesso Admin Riconosciuto con Successo!");
         currentUser = { type: 'admin', username: 'admin' };
         showSection('admin');
         await inizializzaPannelloFornitore();
@@ -72,7 +53,7 @@ async function eseguiLoginProcesso() {
         
         const studi = await response.json();
         if (!Array.isArray(studi)) {
-            alert('❌ Nessuno studio risulta ancora registrato nel Cloud.');
+            alert('❌ Nessuno studio risulta registrato nel Cloud.');
             return;
         }
 
@@ -80,7 +61,7 @@ async function eseguiLoginProcesso() {
         
         if (studioTrovato) {
             if (parseInt(studioTrovato.attivo) === 0) {
-                alert('❌ Accesso Negato: Il link di questo studio fotografico è stato disattivato.');
+                alert('❌ Accesso Negato: Il link di questo studio fotografico è stato disattivato dal Fornitore.');
                 return;
             }
             currentUser = { type: 'studio', ...studioTrovato };
@@ -95,7 +76,7 @@ async function eseguiLoginProcesso() {
         }
     } catch (error) {
         console.error('Errore di rete cloud:', error);
-        alert('❌ Impossibile stabilire una connessione con Cloudflare.');
+        alert('❌ Impossibile connettersi a Cloudflare.');
     }
 }
 
@@ -142,15 +123,6 @@ function showStudioSection(sectionName) {
 // =========================================================================
 
 async function inizializzaPannelloFornitore() {
-    const studioForm = document.getElementById('admin-studio-form');
-    if (studioForm) {
-        studioForm.onsubmit = (e) => { e.preventDefault(); handleSalvaStudioAdmin(); };
-    }
-    const offertaForm = document.getElementById('admin-offerta-form');
-    if (offertaForm) {
-        offertaForm.onsubmit = (e) => { e.preventDefault(); handleSalvaOffertaAdmin(); };
-    }
-
     await caricaOfferteAdmin();
     await caricaStudiAdmin();
 }
@@ -251,3 +223,24 @@ async function caricaStudiAdmin() {
             method: 'GET',
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
+        databaseStudiGlobali = await response.json();
+        if (!Array.isArray(databaseStudiGlobali)) databaseStudiGlobali = [];
+        
+        const totStudi = document.getElementById('studi-attivi');
+        if (totStudi) totStudi.textContent = databaseStudiGlobali.filter(s => parseInt(s.attivo) === 1).length;
+        renderizzaArchivioStudiAdmin();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function renderizzaArchivioStudiAdmin() {
+    const tbody = document.getElementById('studi-archivio-tbody');
+    if (!tbody) return;
+    
+    if (databaseStudiGlobali.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color:#95a5a6;">Nessuno studio presente nell'archivio cloud.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = databaseStudiGlobali.map(s => {
