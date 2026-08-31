@@ -1,5 +1,5 @@
 // =========================================================================
-// APPCENTER STUDIO PREMIUM GOLD - MAIN ENGINE & ADMIN CONTROL v16
+// APPCENTER STUDIO PREMIUM GOLD - MAIN ENGINE & ADMIN CONTROL v16.2
 // =========================================================================
 
 const API_URL = 'https://workers.dev';
@@ -19,16 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
+        // Intercetta l'invio del form e blocca il refresh della pagina all'istante
         loginForm.addEventListener('submit', handleLogin);
     }
+    
+    // Fallback di sicurezza: se la tua interfaccia usa un div/sezione senza tag form
+    const loginBtn = document.querySelector('#login form button, #login button');
+    if (loginBtn && !loginForm) {
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLoginManuale();
+        });
+    }
 
-    // Ascolto form inserimento studio Admin
     const studioForm = document.getElementById('admin-studio-form');
     if (studioForm) {
         studioForm.addEventListener('submit', handleSalvaStudioAdmin);
     }
 
-    // Ascolto form inserimento offerte Admin
     const offertaForm = document.getElementById('admin-offerta-form');
     if (offertaForm) {
         offertaForm.addEventListener('submit', handleSalvaOffertaAdmin);
@@ -73,12 +81,17 @@ function showStudioSection(sectionName) {
     }
 }
 
-// 🔐 Login Unificato e Controllo Accessi
+// 🔐 Login Unificato e Controllo Accessi con Blocco dell'Auto-Refresh
 async function handleLogin(e) {
-    e.preventDefault();
+    if (e) e.preventDefault(); // 🔥 IMPEDISCE ALLA PAGINA DI RICARICARSI E CANCELLARE I CAMPI
     
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    if (!usernameInput || !passwordInput) return;
+    
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
     
     // 1. Ruolo: Fornitore Supremo (Admin)
     if (username === 'admin' && password === '58879@Stella') {
@@ -102,7 +115,6 @@ async function handleLogin(e) {
         const studioTrovato = studi.find(s => s.email === username && s.password === password);
         
         if (studioTrovato) {
-            // Controllo Interruttore Spegni/Accendi Link
             if (parseInt(studioTrovato.attivo) === 0) {
                 alert('❌ Accesso Negato: Il link di questo studio fotografico è stato disattivato dal Fornitore per abbonamento scaduto o sospeso.');
                 return;
@@ -123,6 +135,11 @@ async function handleLogin(e) {
     }
 }
 
+// Interruttore manuale di emergenza associato al bottone diretto onclick
+async function handleLoginManuale() {
+    await handleLogin(null);
+}
+
 // =========================================================================
 // LOGICA LOGISTICA ADMIN / FORNITORE
 // =========================================================================
@@ -132,7 +149,6 @@ async function inizializzaPannelloFornitore() {
     await caricaStudiAdmin();
 }
 
-// Carica Offerte Commerciali
 async function caricaOfferteAdmin() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=offerte_commerciali`, {
@@ -142,9 +158,9 @@ async function caricaOfferteAdmin() {
         databaseOfferteGlobali = await response.json();
         if (!Array.isArray(databaseOfferteGlobali)) databaseOfferteGlobali = [];
         
-        document.getElementById('offerte-totali').textContent = databaseOfferteGlobali.length;
+        const totOfferte = document.getElementById('offerte-totali');
+        if (totOfferte) totOfferte.textContent = databaseOfferteGlobali.length;
         
-        // Popola il menu a tendina nel form degli studi
         const selectOfferta = document.getElementById('admin-studio-offerta');
         if (selectOfferta) {
             selectOfferta.innerHTML = '<option value="">Seleziona un\'Offerta</option>' + 
@@ -173,14 +189,14 @@ function renderizzaListaOfferteAdmin() {
                 <span style="color: #2ecc71; font-size: 0.85em; font-weight: bold;">${o.prezzo}</span>
             </div>
             <div>
-                <button type="button" onclick="caricaModificaOfferta('${o.id}')" style="padding: 4px 8px; font-size: 11px; background: #3498db; border: none; border-radius: 4px;">Modifica</button>
+                <button type="button" onclick="caricaModificaOfferta('${o.id}')" style="padding: 4px 8px; font-size: 11px; background: #3498db; border: none; border-radius: 4px; color: white; cursor: pointer;">Modifica</button>
             </div>
         </div>
     `).join('');
 }
 
 async function handleSalvaOffertaAdmin(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const idInput = document.getElementById('admin-offerta-id').value;
     
     const nuovaOfferta = {
@@ -224,25 +240,9 @@ function caricaModificaOfferta(id) {
     document.getElementById('form-offerta-title').textContent = '📝 Modifica Offerta: ' + o.titolo;
 }
 
-// Carica Archivio Studi
 async function caricaStudiAdmin() {
     try {
         const response = await fetch(`${API_URL}/api/db-load?studio_id=ADMIN_SYSTEM&chiave=studi_registrati`, {
             method: 'GET',
             headers: { 'X-Studio-Token': STUDIO_TOKEN }
         });
-        databaseStudiGlobali = await response.json();
-        if (!Array.isArray(databaseStudiGlobali)) databaseStudiGlobali = [];
-        
-        document.getElementById('studi-attivi').textContent = databaseStudiGlobali.filter(s => parseInt(s.attivo) === 1).length;
-        renderizzaArchivioStudiAdmin();
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function renderizzaArchivioStudiAdmin() {
-    const tbody = document.getElementById('studi-archivio-tbody');
-    if (!tbody) return;
-    
-    if (databaseStudiGlobali.length === 0) {
