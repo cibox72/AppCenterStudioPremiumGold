@@ -15,15 +15,15 @@
         </header>
 
         <!-- ========================================================================= -->
-        <!-- 🔐 SEZIONE LOGIN INIZIALE (ACCESSO UNICO)                                  -->
+        <!-- 🔐 SEZIONE LOGIN INIZIALE (BOTTONE DIRETTO CON ONCLICK BLINDATO)         -->
         <!-- ========================================================================= -->
         <section id="login" class="active" style="max-width: 400px; margin: 0 auto; background: rgba(52, 73, 94, 0.4); padding: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
             <h2 style="text-align: center; color: #ecf0f1; margin-bottom: 20px; font-weight: 400;">🔐 Accesso al Sistema</h2>
-            <form id="login-form" style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
                 <input type="text" id="username" placeholder="Utente (Email per lo Studio)" style="padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2);" required>
                 <input type="password" id="password" placeholder="Password" style="padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2);" required>
-                <button type="submit" style="padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em;">Entra</button>
-            </form>
+                <button type="button" onclick="handleLoginManuale()" style="padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; width: 100%;">Entra</button>
+            </div>
         </section>
 
         <!-- ========================================================================= -->
@@ -73,17 +73,17 @@
                 <!-- BLOCCO DI INSERIMENTO / MODIFICA STUDIO -->
                 <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
                     <h3 id="form-studio-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">➕ Configura Nuovo Studio</h3>
-                    <form id="admin-studio-form" style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px;">
                         <input type="hidden" id="admin-studio-id">
                         
                         <label style="color:#bdc3c7; font-size:0.85em;">Dati di Base</label>
-                        <input type="text" id="admin-studio-nome" placeholder="Nome Studio Fotografico" required style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        <input type="text" id="admin-studio-referente" placeholder="Nome Referente / Titolare" required style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        <input type="text" id="admin-studio-telefono" placeholder="Telefono Studio" required style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                        <input type="text" id="admin-studio-nome" placeholder="Nome Studio Fotografico" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                        <input type="text" id="admin-studio-referente" placeholder="Nome Referente / Titolare" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                        <input type="text" id="admin-studio-telefono" placeholder="Telefono Studio" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
                         
                         <label style="color:#bdc3c7; font-size:0.85em; margin-top:5px;">Credenziali di Accesso dello Studio (Editabili)</label>
-                        <input type="email" id="admin-studio-email" placeholder="Username (Email dello Studio)" required style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        <input type="text" id="admin-studio-password" placeholder="Password dello Studio" required style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                        <input type="email" id="admin-studio-email" placeholder="Username (Email dello Studio)" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                        <input type="text" id="admin-studio-password" placeholder="Password dello Studio" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
                         
                         <label style="color:#bdc3c7; font-size:0.85em; margin-top:5px;">Abbonamento & Offerta</label>
                         <select id="admin-studio-offerta" style="padding: 10px; border-radius: 5px; background: rgba(52, 73, 94, 0.6); color: #ecf0f1; border: 1px solid rgba(255,255,255,0.2);">
@@ -95,13 +95,14 @@
                         </select>
                         
                         <div style="display: flex; gap: 10px; margin-top: 10px;">
-                            <button type="submit" style="flex: 1; background: #2ecc71; padding: 10px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Salva Studio</button>
+                            <button type="button" onclick="handleSalvaStudioAdmin()" style="flex: 1; background: #2ecc71; padding: 10px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Salva Studio</button>
                             <button type="button" onclick="annullaModificaStudio()" style="background: #7f8c8d; padding: 10px; color: white; border: none; border-radius: 5px; cursor: pointer;">Annulla</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <!-- BLOCCO GESTIONE OFFERTE COMMERCIALI -->
                 <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
                     <h3 id="form-offerta-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">🏷️ Gestione Offerte</h3>
-                    <form id="admin-offerta-form" style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                    <div style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                        <input type="hidden" id="admin-offerta-id">
