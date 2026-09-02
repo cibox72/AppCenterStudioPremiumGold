@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppCenter Studio Premium Gold</title>
-    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="./public/css/style.css">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <input type="text" id="username" placeholder="Utente (Email per lo Studio)" style="padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2);" required>
                 <input type="password" id="password" placeholder="Password" style="padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2);" required>
-                <button type="button" onclick="handleLoginManuale()" style="padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; width: 100%;">Entra</button>
+                <button type="button" id="btn-entra-gold" onclick="handleLoginManuale()" style="padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; width: 100%;">Entra</button>
             </div>
         </section>
 
@@ -33,10 +33,10 @@
             <h2 style="text-align: center; color: #ecf0f1; margin-bottom: 20px;">📱 Applicazioni disponibili</h2>
             
             <div class="menu-studio" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
-                <button class="btn" onclick="showStudioSection('preventivi')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">01 Preventivi</button>
-                <button class="btn" onclick="showStudioSection('clienti')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">02 Clienti</button>
-                <button class="btn" onclick="showStudioSection('workflow')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">03 Workflow</button>
-                <button class="btn" onclick="showStudioSection('foto')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">04/05 Album & Gallery</button>
+                <button class="btn" onclick="showStudioSection('preventivi')">01 Preventivi</button>
+                <button class="btn" onclick="showStudioSection('clienti')">02 Clienti</button>
+                <button class="btn" onclick="showStudioSection('workflow')">03 Workflow</button>
+                <button class="btn" onclick="showStudioSection('foto')">04/05 Album & Gallery</button>
             </div>
 
             <div id="studio-content" style="background: rgba(52, 73, 94, 0.2); padding: 20px; border-radius: 10px; min-height: 200px;">
@@ -47,7 +47,7 @@
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-                <button class="btn btn-danger" onclick="logout()" style="padding: 10px 20px; background: #c0392b; color: white; border: none; border-radius: 5px; cursor: pointer;">🚪 Esci dallo Studio</button>
+                <button class="btn btn-danger" onclick="logout()">🚪 Esci dallo Studio</button>
             </div>
         </section>
 
@@ -105,5 +105,6 @@
                 <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
                     <h3 id="form-offerta-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">🏷️ Gestione Offerte</h3>
                     <div style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-
-                        
+                        <input type="hidden" id="admin-offerta-id">
+                        <input type="text" id="admin-offerta-titolo" placeholder="Nome Offerta (es: Abbonamento Annuale Gold)" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                        <input type="text" id="admin-offerta-prezzo" placeholder="Prezzo Offerta (es: €299/anno)" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
