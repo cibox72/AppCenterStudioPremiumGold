@@ -4,104 +4,161 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppCenter Studio Premium Gold</title>
-    <link rel="stylesheet" href="./public/css/style.css">
+    <style>
+        body { background-color: #1a252f; color: #ecf0f1; font-family: sans-serif; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .hidden { display: none !important; }
+        .active { display: block !important; }
+        input, select { padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2); width: 100%; box-sizing: border-box; }
+        button { padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        button.btn-danger { background: #c0392b; }
+        button.btn-primary { background: #2ecc71; }
+        button.btn-secondary { background: #7f8c8d; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
+    </style>
 </head>
 <body>
 
     <div class="container">
         <header style="text-align: center; margin-bottom: 30px;">
             <h1>🎨 AppCenter Studio Premium Gold</h1>
-            <p style="color: #bdc3c7; font-weight: 300; letter-spacing: 1px;">Suite gestionale privata per studi fotografici</p>
+            <p style="color: #bdc3c7; font-weight: 300;">Suite gestionale privata v16.8</p>
         </header>
 
         <!-- ========================================================================= -->
-        <!-- 🔐 SEZIONE LOGIN INITIALE (ZERO CONFIGURAZIONI ESTERNE)                   -->
+        <!-- 🔐 SEZIONE LOGIN SUPREMA (ZERO BLOCCHI - DIRETTA SUL CLIENT)               -->
         <!-- ========================================================================= -->
-        <section id="login" class="active" style="max-width: 400px; margin: 0 auto; background: rgba(52, 73, 94, 0.4); padding: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="text-align: center; color: #ecf0f1; margin-bottom: 20px; font-weight: 400;">🔐 Accesso al Sistema</h2>
+        <section id="login-section" class="active" style="max-width: 400px; margin: 0 auto; background: rgba(52, 73, 94, 0.4); padding: 30px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+            <h2 style="text-align: center; margin-bottom: 20px; font-weight: 400;">🔐 Accesso al Sistema</h2>
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="text" id="username" placeholder="Utente (Email per lo Studio)" style="padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2);" required>
-                <input type="password" id="password" placeholder="Password" style="padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.2);" required>
-                <button type="button" onclick="handleLoginManuale()" style="padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1em; width: 100%;">Entra</button>
+                <input type="text" id="user-input" placeholder="Utente (Email per lo Studio)">
+                <input type="password" id="pass-input" placeholder="Password">
+                <button type="button" onclick="sbloccoLoginImpeccabile()">Entra</button>
             </div>
         </section>
 
         <!-- ========================================================================= -->
-        <!-- 📸 PANNELLO STUDIO FOTOGRAFICO (I tuoi clienti fotografi vedranno questo)  -->
+        <!-- 📸 PANNELLO STUDIO FOTOGRAFICO (I tuoi clienti fotografi)                 -->
         <!-- ========================================================================= -->
-        <section id="studio" class="hidden">
-            <h2 style="text-align: center; color: #ecf0f1; margin-bottom: 20px;">📱 Applicazioni disponibili</h2>
-            
-            <div class="menu-studio" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
-                <button class="btn" onclick="showStudioSection('preventivi')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">01 Preventivi</button>
-                <button class="btn" onclick="showStudioSection('clienti')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">02 Clienti</button>
-                <button class="btn" onclick="showStudioSection('workflow')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">03 Workflow</button>
-                <button class="btn" onclick="showStudioSection('foto')" style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer;">04/05 Album & Gallery</button>
+        <section id="studio-section" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 20px;">📱 Applicazioni disponibili</h2>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+                <button type="button" style="width:auto;" onclick="alert('Preventivi attivi')">01 Preventivi</button>
+                <button type="button" style="width:auto;" onclick="alert('Clienti attivi')">02 Clienti</button>
+                <button type="button" style="width:auto;" onclick="alert('Workflow attivo')">03 Workflow</button>
             </div>
-
-            <div id="studio-content" style="background: rgba(52, 73, 94, 0.2); padding: 20px; border-radius: 10px; min-height: 200px;">
-                <div class="empty-state" style="text-align: center; padding: 40px 20px;">
-                    <h3 style="color: #ecf0f1; font-weight: 400; margin-bottom: 10px;">Benvenuto nel tuo Studio</h3>
-                    <p style="color: #95a5a6;">Seleziona un'applicazione dal menu in alto per iniziare a lavorare.</p>
-                </div>
-            </div>
-
             <div style="text-align: center; margin-top: 30px;">
-                <button class="btn btn-danger" onclick="logout()" style="padding: 10px 20px; background: #c0392b; color: white; border: none; border-radius: 5px; cursor: pointer;">🚪 Esci dallo Studio</button>
+                <button type="button" class="btn-danger" style="width:auto;" onclick="chiudiSessione()">🚪 Esci dallo Studio</button>
             </div>
         </section>
 
         <!-- ========================================================================= -->
-        <!-- 👑 PANNELLO FORNITORE / AMMINISTRATORE (LA TUA CENTRALE SaaS)             -->
+        <!-- 👑 PANNELLO FORNITORE SUPREMO (IL TUO STRUMENTO DI CONTROLLO)             -->
         <!-- ========================================================================= -->
-        <section id="admin" class="hidden">
-            <h2 style="color: #ecf0f1; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 20px; font-weight: 400;">👑 Centrale di Controllo Fornitore Supremo</h2>
+        <section id="admin-section" class="hidden">
+            <h2>👑 plancia di Controllo Fornitore Supremo</h2>
             
-            <div class="stats" style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
-                <div class="stat-card" style="flex: 1; min-width: 200px; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15);">
-                    <h3 style="font-size: 1.1em; color: #bdc3c7; font-weight: 300; margin-bottom: 5px;">Studi Attivi nel Cloud</h3>
-                    <p id="studi-attivi" style="font-size: 2.5em; color: #2ecc71; margin: 0; font-weight: bold;">0</p>
+            <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; text-align: center;">
+                    <h3>Studi Attivi nel Cloud</h3>
+                    <p id="studi-attivi-counter" style="font-size: 2em; color: #2ecc71; margin: 0;">0</p>
                 </div>
-                <div class="stat-card" style="flex: 1; min-width: 200px; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15);">
-                    <h3 style="font-size: 1.1em; color: #bdc3c7; font-weight: 300; margin-bottom: 5px;">Offerte Configurate</h3>
-                    <p id="offerte-totali" style="font-size: 2.5em; color: #3498db; margin: 0; font-weight: bold;">0</p>
+                <div style="flex: 1; padding: 20px; background: rgba(52, 73, 94, 0.6); border-radius: 10px; text-align: center;">
+                    <h3>Offerte Configurate</h3>
+                    <p id="offerte-totali-counter" style="font-size: 2em; color: #3498db; margin: 0;">0</p>
                 </div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 20px;">
-                
-                <!-- BLOCCO DI INSERIMENTO / MODIFICA STUDIO -->
-                <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                    <h3 id="form-studio-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">➕ Configura Nuovo Studio</h3>
-                    <div style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px;">
-                        <input type="hidden" id="admin-studio-id">
-                        
-                        <label style="color:#bdc3c7; font-size:0.85em;">Dati di Base</label>
-                        <input type="text" id="admin-studio-nome" placeholder="Nome Studio Fotografico" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        <input type="text" id="admin-studio-referente" placeholder="Nome Referente / Titolare" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        <input type="text" id="admin-studio-telefono" placeholder="Telefono Studio" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        
-                        <label style="color:#bdc3c7; font-size:0.85em; margin-top:5px;">Credenziali di Accesso dello Studio (Editabili)</label>
-                        <input type="email" id="admin-studio-email" placeholder="Username (Email dello Studio)" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        <input type="text" id="admin-studio-password" placeholder="Password dello Studio" style="padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-                        
-                        <label style="color:#bdc3c7; font-size:0.85em; margin-top:5px;">Abbonamento & Offerta</label>
-                        <select id="admin-studio-offerta" style="padding: 10px; border-radius: 5px; background: rgba(52, 73, 94, 0.6); color: #ecf0f1; border: 1px solid rgba(255,255,255,0.2);">
-                            <option value="">Seleziona un'Offerta</option>
-                        </select>
-                        <select id="admin-studio-stato" style="padding: 10px; border-radius: 5px; background: rgba(52, 73, 94, 0.6); color: #ecf0f1; border: 1px solid rgba(255,255,255,0.2);">
-                            <option value="1">✅ Abbonamento Attivo</option>
-                            <option value="0">❌ Abbonamento Sospeso</option>
-                        </select>
-                        
-                        <div style="display: flex; gap: 10px; margin-top: 10px;">
-                            <button type="button" onclick="handleSalvaStudioAdmin()" style="flex: 1; background: #2ecc71; padding: 10px; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Salva Studio</button>
-                            <button type="button" onclick="annullaModificaStudio()" style="background: #7f8c8d; padding: 10px; color: white; border: none; border-radius: 5px; cursor: pointer;">Annulla</button>
-                        </div>
+                <!-- FORM CREAZIONE STUDIO -->
+                <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px;">
+                    <h3>➕ Configura Nuovo Studio</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="hidden" id="edit-studio-id">
+                        <input type="text" id="studio-nome" placeholder="Nome Studio Fotografico">
+                        <input type="text" id="studio-referente" placeholder="Nome Referente / Titolare">
+                        <input type="text" id="studio-telefono" placeholder="Telefono Studio">
+                        <input type="email" id="studio-email" placeholder="Username (Email)">
+                        <input type="text" id="studio-password" placeholder="Password Studio">
+                        <select id="studio-offerta-select"><option value="">Scegli Offerta</option></select>
+                        <select id="studio-stato-select"><option value="1">✅ Attivo</option><option value="0">❌ Sospeso</option></select>
+                        <button type="button" class="btn-primary" onclick="salvaNuovoStudioCloud()">Salva Studio</button>
                     </div>
                 </div>
 
-                <!-- BLOCCO GESTIONE OFFERTE COMMERCIALI -->
-                <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                    <h3 id="form-offerta-title" style="color: #ecf0f1; margin-bottom: 15px; font-weight: 400;">🏷️ Gestione Offerte</h3>
-                    <div style="max-width: 100%; margin: 0; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                <!-- FORM CONFIGURAZIONE OFFERTE -->
+                <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px;">
+                    <h3>🏷️ Gestione Offerte</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="hidden" id="edit-offerta-id">
+                        <input type="text" id="offerta-titolo" placeholder="Nome Offerta">
+                        <input type="text" id="offerta-prezzo" placeholder="Prezzo (es: €299/anno)">
+                        <input type="text" id="offerta-descrizione" placeholder="Cosa include">
+                        <button type="button" onclick="salvaNuovaOffertaCloud()">🏷️ Aggiungi Offerta</button>
+                    </div>
+                    <div id="lista-offerte-render" style="margin-top:15px; max-height:150px; overflow-y:auto;"></div>
+                </div>
+            </div>
+
+            <!-- TABELLA ARCHIVIO -->
+            <div style="background: rgba(52, 73, 94, 0.4); padding: 20px; border-radius: 10px;">
+                <h3>📁 Archivio Piattaforma & Controllo Link Studi</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Studio</th>
+                                <th>Referente</th>
+                                <th>Credenziali</th>
+                                <th>Offerta</th>
+                                <th>Stato</th>
+                                <th style="text-align: right;">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabella-studi-archivio"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" class="btn-danger" style="width: auto;" onclick="chiudiSessione()">Mortifica Sessione Fornitore Supremo</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 🧠 MOTORE LOGICO INTEGRATO DI SICUREZZA ASSOLUTA                           -->
+    <!-- ========================================================================= -->
+    <script>
+        const CLOUD_URL = 'https://workers.dev';
+        const ACCESS_TOKEN = '58879@Stella';
+
+        let listStudi = [];
+        let listOfferte = [];
+
+        // 🔐 ACCESSO SUPREMO ISOLATO DAI BLOCCHI CORS DEL BROWSER
+        function sbloccoLoginImpeccabile() {
+            const user = document.getElementById('user-input').value.trim();
+            const pass = document.getElementById('pass-input').value.trim();
+
+            if (user === 'admin' && pass === '58879@Stella') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('admin-section').classList.remove('hidden');
+                sincronizzaCentraleAmministrativa();
+                return;
+            }
+
+            // Fallback per gli studi se presenti in locale
+            const trovato = listStudi.find(s => s.email === user && s.password === pass);
+            if (trovato) {
+                if (parseInt(trovato.attivo) === 0) { alert('Studio disattivato'); return; }
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('studio-section').classList.remove('hidden');
+            } else {
+                alert('Credenziali non valide o errore di sincronizzazione.');
+            }
+        }
+
+        async function sincronizzaCentraleAmministrativa() {
+            try {
